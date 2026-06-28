@@ -1,0 +1,3335 @@
+{
+  "b496298a-cb3c-47aa-98d5-ec824b89207d": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "time-management",
+      "study-habits",
+      "life-skills",
+      "accountability",
+      "exam-prep",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "8f7140cb-3abc-43a9-975f-a522b571806e": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "d73140b1-686c-454e-ad1e-39f12359e9d7": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented",
+      "calm"
+    ],
+    "offered_focus": [
+      "communication",
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "c53811fa-9bad-43b8-a30a-076c5ab60c70": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "d3344828-e206-4607-bf07-40746f6cc79c": {
+    "personality_tags": [
+      "friendly",
+      "empathetic"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "exam-prep",
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "fdcbf71a-ce15-465c-ae5d-24925e9ab389": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "exam-prep",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "67ecf330-9158-4362-bce6-0ea5f5cb4c86": {
+    "personality_tags": [
+      "calm"
+    ],
+    "offered_focus": [
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "6a322667-0ca3-4054-bc3e-a00f6adbbe52": {
+    "personality_tags": [
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "time-management",
+      "life-skills",
+      "accountability"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "8f822304-3f6b-4547-86f7-c3482d75c6aa": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "6cae6ad7-cb66-40b2-a0a7-e6729b272bfb": {
+    "personality_tags": [
+      "structured"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "study-habits",
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "0ae612c5-875b-4794-b40a-0036dba0c4e3": {
+    "personality_tags": [
+      "structured"
+    ],
+    "offered_focus": [
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "ae40a8e7-78fa-4044-855f-ca0836785299": {
+    "personality_tags": [
+      "patient"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "8edcc58d-8c9e-45c4-8fd0-c3cf01e4db41": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "motivation",
+      "confidence",
+      "communication",
+      "focus-attention"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation",
+        "confidence",
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "c2bb9993-6bd3-45bb-9055-358d3153b111": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "a4a927ac-936c-4d84-9078-c84329966c4f": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "cdf65533-2da6-44b1-b717-6a2ff0346a0a": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "5e690fc2-35b6-475d-b43c-8f089b036bf7": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "f7d7e7a5-dd36-44bc-bf55-c6be580ad8e7": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "life-skills"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "life-skills"
+      ]
+    },
+    "source": "keyword"
+  },
+  "6a909b43-e145-49af-b2eb-2d6e2af36fc1": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "time-management",
+      "study-habits",
+      "life-skills",
+      "accountability"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "176c25d7-dfe1-41d8-9a04-a823b2638492": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "a3f74c0f-0806-4cc4-832b-c664df340b5d": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "time-management",
+      "life-skills",
+      "accountability",
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "9e698885-42c6-4070-b22f-8aeda3b4c348": {
+    "personality_tags": [
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "69a45d82-61e2-4ee6-a337-54b539e9c712": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "time-management",
+      "focus-attention"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management"
+      ]
+    },
+    "source": "keyword"
+  },
+  "dd81f5c4-96b0-41db-aaac-e16599b5b289": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "ef7650d4-642f-4a23-a099-9e6c411523f2": {
+    "personality_tags": [
+      "calm"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "motivation",
+      "career-orientation",
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "motivation",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "b86bff35-34a6-4d3e-a60a-5854fa3611ba": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "motivation",
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "36d01537-a982-4ec6-a421-4266f3a9c770": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "exam-prep",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "1aaae851-a70b-4a70-97e7-770c4edf9a18": {
+    "personality_tags": [
+      "calm"
+    ],
+    "offered_focus": [
+      "exam-prep",
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "b7f7bfb7-b69a-4d54-a892-ed48bd1b538a": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "time-management",
+      "study-habits",
+      "life-skills",
+      "accountability"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "386c84bc-bd65-412d-bc58-b9254a099ee7": {
+    "personality_tags": [
+      "structured"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "7113265e-4d05-4ffa-ae8e-a9255ce4b7f7": {
+    "personality_tags": [
+      "encouraging",
+      "calm",
+      "energetic"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "f492bf5c-8e24-4323-a3e5-c532ad02f5a1": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "03122e5b-5a98-4df3-b521-13876e0ccad5": {
+    "personality_tags": [
+      "empathetic"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "ea7b3483-b943-4441-a64a-e2b221eccb0b": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "b1e4aa6b-c395-432e-ac6b-512622cf02eb": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "826fd6da-bf3a-44df-a78f-773da37af228": {
+    "personality_tags": [
+      "patient",
+      "motivating",
+      "empathetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "d9e25abd-d909-4452-93e8-29a501987939": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "exam-prep",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "6daba604-9165-46e0-ae15-e5efb41ea677": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "8aaef055-9a8e-4467-8ecc-87f491d4b760": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "time-management",
+      "life-skills",
+      "accountability"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "f7d76ba4-fafd-482e-b13f-defc6df32eb2": {
+    "personality_tags": [
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "157c40ed-c2aa-40e6-a34c-62bad4fffe5b": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "e0461432-0837-4715-83ba-fdf5b3a13039": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "4de2d0dd-072a-4708-9387-57eb0a940afb": {
+    "personality_tags": [
+      "patient",
+      "structured",
+      "motivating",
+      "empathetic",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "time-management",
+      "life-skills",
+      "accountability"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "b10adc25-a38e-4534-b96f-3c0f122ece08": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "emotional-support",
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "899713da-0d35-4ece-a3d5-8357b87d66c5": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "motivation",
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "17b9e213-366a-4786-937c-86691c31e5c8": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "11ad7574-e05f-4ff9-9952-a78959f18dbc": {
+    "personality_tags": [
+      "patient",
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "time-management",
+      "life-skills",
+      "accountability"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "470f39a2-0603-469c-b10c-53c427b2816c": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "exam-prep",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "9f6b44d1-d3c1-4894-8cbe-e305ed9271d8": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "confidence"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence"
+      ]
+    },
+    "source": "keyword"
+  },
+  "3d47091d-f4cd-4226-8bd3-78b24cc5af78": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "2bf337fe-bb75-4399-be0d-a21c379609ec": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "03b572e9-3828-4626-91eb-30628bcbaa6b": {
+    "personality_tags": [
+      "patient",
+      "motivating",
+      "empathetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "76c33016-b33a-4194-a55b-8dfe92a0a5c9": {
+    "personality_tags": [
+      "calm"
+    ],
+    "offered_focus": [
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "9711f8f2-71a7-407a-971c-6d5e35bd1624": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "edd9a7f6-572b-4bf6-a70d-42b3821d2e6d": {
+    "personality_tags": [
+      "friendly",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "motivation",
+      "communication",
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation",
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "29ba3258-c580-4891-b89f-141ee737d36c": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "bdfa9a6f-d092-4925-9d83-ada1c9f9718e": {
+    "personality_tags": [
+      "patient",
+      "motivating",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "b429caa2-b4a1-4b74-bb1f-117233b93f9b": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "b2365a03-9b02-48a1-8bb5-e42f23847d03": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "b71a639e-285c-4ffc-aa20-9863b2b19ba3": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "time-management",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management"
+      ]
+    },
+    "source": "keyword"
+  },
+  "34dee229-35db-4db1-8d3d-8216197b5e1f": {
+    "personality_tags": [
+      "patient",
+      "motivating",
+      "empathetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "3d0c693a-1f03-4165-b981-528419a0d3ba": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "31864ad3-78b8-437f-b814-d9eef2ec74e6": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "601186ce-1727-4961-81b5-936a3a76ee30": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "motivation",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "motivation",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "7bfab11b-02f0-4c57-b409-0da387a91509": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "f8d8a0f3-f9fd-41af-8f9d-5a236f0602a1": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "life-skills"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "life-skills"
+      ]
+    },
+    "source": "keyword"
+  },
+  "ea7c78f4-6de7-4921-8d16-b66c0fb02ec9": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "b7cb9e47-2cd3-4854-b49e-690060828caa": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "life-skills"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "life-skills"
+      ]
+    },
+    "source": "keyword"
+  },
+  "92a6d2ce-49df-4f81-82d5-197b6731b1a4": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "72ab2587-0ebb-4492-8a26-18a3bb67239f": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "41d7781e-7f2e-4605-985e-e9a6c08e5499": {
+    "personality_tags": [
+      "calm"
+    ],
+    "offered_focus": [
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "3007ab0b-4e97-4f62-b39d-e49f01b78222": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm",
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "bda3be57-b432-4f77-8d91-b1b0aa70ac48": {
+    "personality_tags": [
+      "patient",
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "29ff4c1d-ad8b-47b8-ac52-e15bbf4cf723": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "d027dbab-edc4-41e1-9b73-d056a1c6a098": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "d348123f-9790-4324-a3de-78987733622a": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "exam-prep",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "95ecf68a-dd7c-4a84-a6c5-34335a0be2d9": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "442d37a1-136e-41ed-9f09-30df74614e9b": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "focus-attention"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "072fb15f-9281-4003-85f4-83afae443fa6": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "5ef58143-4ac1-481c-b0aa-13ead81a5a87": {
+    "personality_tags": [
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "73736ef2-476a-4eb0-b803-03adc2241e77": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "motivation",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "763bd3a8-ed85-4a4f-b986-8c861349a15a": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "c448bf80-c54a-40de-b282-6a64a952c0de": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "confidence",
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "4699336a-3ef0-4649-9cac-de2e09f4aab2": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "a2cfd6cf-43b6-464f-9e97-deb7a89e5d34": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "055b9cdf-9f12-4bea-8b1f-d85c819a1d07": {
+    "personality_tags": [
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "c38bbbb9-1fb5-44ec-9f78-438828a66184": {
+    "personality_tags": [
+      "patient"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "c784f847-6f5e-4715-9155-b5244d50b923": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "ad8f1fbf-fc19-49ef-962e-1c95cd11ea35": {
+    "personality_tags": [
+      "friendly",
+      "structured",
+      "energetic"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "life-skills",
+      "confidence"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "life-skills",
+        "confidence"
+      ]
+    },
+    "source": "keyword"
+  },
+  "83a17d58-927f-49aa-9d97-22a09ce2c752": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "91e21dfe-805f-43f1-9426-8b213c98f8d7": {
+    "personality_tags": [
+      "friendly",
+      "structured",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "confidence",
+      "communication",
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "confidence",
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "bf217bb2-80de-4cfb-93b3-e26ab7a8050e": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "exam-prep",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "8ab39ed3-7a07-4477-a4cf-d24002704db9": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "confidence"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence"
+      ]
+    },
+    "source": "keyword"
+  },
+  "7c9deaf8-07ae-430a-ba2e-4b8f1a75f021": {
+    "personality_tags": [
+      "patient"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "8196d020-315f-4d48-a93e-49ff94e429f6": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "fe784055-287e-47c5-9452-4536ea5f6439": {
+    "personality_tags": [
+      "patient",
+      "motivating",
+      "empathetic"
+    ],
+    "offered_focus": [
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "82ecda94-4df4-4526-a585-2fa33d6aadba": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "life-skills"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "life-skills"
+      ]
+    },
+    "source": "keyword"
+  },
+  "c1e53289-3306-4411-a239-b612c31985c1": {
+    "personality_tags": [
+      "structured"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "exam-prep",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "d6e23ba4-eddd-4f8e-ab08-60694502c6af": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "b0266b9d-e4b5-4e8e-a561-bff4535bee82": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "motivation",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "74ecd3f7-1181-4cd6-81a2-1d7f2efe9f54": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "ada66a82-0e68-421a-b7af-46a53dffe654": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "confidence",
+      "communication",
+      "focus-attention"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence",
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "f315f70a-3e9b-47c4-9392-a013bf71b9f6": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "communication",
+      "focus-attention",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "communication",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "6af813eb-38a4-4ef1-a9b8-5573939fd276": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "time-management",
+      "life-skills",
+      "accountability",
+      "exam-prep",
+      "confidence"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability",
+        "confidence"
+      ]
+    },
+    "source": "keyword"
+  },
+  "95a80bef-6f42-4436-b9b8-d61049a64e72": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "confidence"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "study-habits",
+        "confidence"
+      ]
+    },
+    "source": "keyword"
+  },
+  "0e3877c4-caf3-486c-a7c2-04952597c726": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "23052dbb-d493-4339-9e02-d3bd95716f50": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "motivation",
+      "exam-prep",
+      "communication",
+      "focus-attention"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "99554fd9-1bf5-4543-b27b-c168645a3030": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "confidence"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence"
+      ]
+    },
+    "source": "keyword"
+  },
+  "d9e19c4b-6258-46f5-9d76-7f06ec8a261b": {
+    "personality_tags": [
+      "empathetic"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "motivation",
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "4b59000a-776a-47a1-8557-9e9f57dccfc9": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented",
+      "energetic"
+    ],
+    "offered_focus": [
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "c51fa169-f18d-4550-a11a-c4a0eaad31d1": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "d21ed543-fbe5-4fd1-8878-61f52a08f3ef": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "bd08e3b3-d853-400a-9cc9-1c8f17c55926": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "life-skills",
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "life-skills"
+      ]
+    },
+    "source": "keyword"
+  },
+  "1a4c2162-f525-4129-96b6-f7b3201063bd": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "confidence"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence"
+      ]
+    },
+    "source": "keyword"
+  },
+  "1a142523-d37c-452d-8b7a-eae916453796": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "life-skills"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "life-skills"
+      ]
+    },
+    "source": "keyword"
+  },
+  "6164a81b-97a1-4965-90e2-7975eb51362a": {
+    "personality_tags": [
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "5c28c41c-2dda-4d47-9677-6d1acf3153b4": {
+    "personality_tags": [
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "communication",
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "7ee68504-f107-4828-a74a-3b2af0566b15": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "7a51da43-1edf-473f-8eff-1340411677f0": {
+    "personality_tags": [
+      "calm"
+    ],
+    "offered_focus": [
+      "time-management",
+      "life-skills",
+      "accountability",
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "de23522e-b2eb-4fc5-bed2-7f41cd7407fa": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "9ff28aa6-6113-4edb-870e-e00518a49d10": {
+    "personality_tags": [
+      "patient",
+      "motivating",
+      "empathetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "cbf06a02-a272-40bb-8ca3-c2c82506a1e1": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "life-skills"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "life-skills"
+      ]
+    },
+    "source": "keyword"
+  },
+  "eb04cfba-4570-40c3-9e91-f5abd14bce34": {
+    "personality_tags": [
+      "structured"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "3370dd6b-ad6e-4210-aae4-2ba338a2c9a9": {
+    "personality_tags": [
+      "friendly",
+      "patient",
+      "structured",
+      "motivating",
+      "empathetic"
+    ],
+    "offered_focus": [
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "83558d1a-6deb-47b2-a7ae-82fb23a6db48": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "5eb0a3a8-cf2c-48a4-a46c-21098333414c": {
+    "personality_tags": [
+      "calm",
+      "energetic"
+    ],
+    "offered_focus": [
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "023d1246-ebe2-40ff-a545-e36ad98eb2ae": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "motivation",
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "3861df9d-6ac2-4a2e-ac05-28bc50fe500a": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "52f555d7-0a63-4dd2-9936-167beea853af": {
+    "personality_tags": [
+      "friendly",
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "exam-prep",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "e96f87be-57ec-4291-8762-fa4e6f85aa90": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "d9f0b9d4-43a3-4c6d-93c9-d00471ef1124": {
+    "personality_tags": [
+      "patient",
+      "motivating",
+      "empathetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "e9a23c7c-6f0d-468a-a837-09f2bd16b78c": {
+    "personality_tags": [
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "766d0486-aa18-4553-84f5-de746b8c810e": {
+    "personality_tags": [
+      "empathetic"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "b4cbae3e-2705-4f34-8a47-cbf07813f5d9": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "fed91ef7-e3a0-438f-bffd-36bf39d3c0cf": {
+    "personality_tags": [
+      "empathetic",
+      "energetic"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "24cfa22a-aa10-4e52-ab29-2c1e0aafdff3": {
+    "personality_tags": [
+      "empathetic"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "9801bc2f-01ee-4a1e-ae07-d630a48172c8": {
+    "personality_tags": [
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "ecc916f8-b4c7-4107-93b3-1bf10eb6ed0b": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "focus-attention"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "09eed7bd-b6f8-4bdd-bd2a-feb15e01fe15": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "efd885b9-ebaf-4f6d-9121-0b26880a0f3a": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "651bcb0d-1328-4363-9983-235a741f2558": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "life-skills"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "life-skills"
+      ]
+    },
+    "source": "keyword"
+  },
+  "6438bab4-5571-4bab-bdc3-978c3705001d": {
+    "personality_tags": [
+      "patient",
+      "empathetic"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "motivation",
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "a92a30c6-4d82-484f-8f48-b498ae39332b": {
+    "personality_tags": [
+      "friendly",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "accountability",
+      "career-orientation",
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "9ed6fde6-9b83-48f7-a606-0bf99ece124a": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "time-management",
+      "life-skills",
+      "accountability"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "c857a671-96f1-4f4c-9b1e-1199b0151922": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "db20a3ce-e64c-41e7-89f8-c8ee393b261d": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "confidence"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence"
+      ]
+    },
+    "source": "keyword"
+  },
+  "4f152aaf-8162-4630-b701-67419c05f5bd": {
+    "personality_tags": [
+      "patient",
+      "structured",
+      "motivating",
+      "empathetic",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "time-management",
+      "life-skills",
+      "accountability"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "660456e7-40f4-4c56-b38f-6deeb68ca890": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "time-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management"
+      ]
+    },
+    "source": "keyword"
+  },
+  "4c7e73d4-d732-45d9-bd86-b57b0d73b759": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "47739d0d-a5cc-472d-9122-39afd75b38dd": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "motivation",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "motivation",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "3908ccf7-6ba8-451b-911a-a9f25e4cf492": {
+    "personality_tags": [
+      "patient"
+    ],
+    "offered_focus": [
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "d8921df8-3775-4fb1-a75a-3e8fe92819e2": {
+    "personality_tags": [
+      "calm"
+    ],
+    "offered_focus": [
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "59d44ede-a6cf-4d4f-87e7-dcb55a6e5c5d": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "887b2ebb-4916-435e-9a72-b34737dff028": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "exam-prep",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "6001f4fa-deec-4628-a1de-70cd7ed1d402": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "accountability",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "98cb1328-faf6-4d1d-a9e4-a1a50f2617d7": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "life-skills",
+      "exam-prep",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "life-skills"
+      ]
+    },
+    "source": "keyword"
+  },
+  "ae359b65-ec65-4de3-b75b-1fdb4f264e03": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "confidence"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence"
+      ]
+    },
+    "source": "keyword"
+  },
+  "ae3ea674-c0ad-4ad3-b91f-ddf68f9d09e1": {
+    "personality_tags": [
+      "structured"
+    ],
+    "offered_focus": [
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "39c23f1b-0857-48ad-8c7f-e7babf1e5d68": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "exam-prep",
+      "confidence"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence"
+      ]
+    },
+    "source": "keyword"
+  },
+  "2b47ee22-622e-4888-b581-d5a1bac5653b": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "1aa12865-aa50-4e90-80f7-7bd9df504fd2": {
+    "personality_tags": [
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "252ac1c6-86bd-4611-bc76-9bd4edfce6ff": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "motivation",
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence",
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "3bf29950-a31f-46b3-859a-83e6d4ba5dac": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence",
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "22fa3045-609c-4abd-a17d-361006cf6cf2": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "9728e24d-4a28-4562-ba71-7b8420a34bee": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "time-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management"
+      ]
+    },
+    "source": "keyword"
+  },
+  "922aae66-6d90-4e0e-b95f-8ad216500474": {
+    "personality_tags": [
+      "calm"
+    ],
+    "offered_focus": [
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "2c807779-fbd3-4f92-aad9-b073ed676914": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "1cdb6c53-5346-456b-b04f-aa0effb71651": {
+    "personality_tags": [
+      "structured",
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "11b7d94d-3cc7-4403-9fa7-914a755d20d6": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "exam-prep",
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence",
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "0aa5e223-44c2-474b-ac5c-5dc4c3269f34": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "652e0f47-4c10-4ebd-aa5f-9a6e761e05aa": {
+    "personality_tags": [
+      "patient",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "0aa4211a-738f-4a1b-b9f4-31522528a6dd": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "4fee2432-6c25-4d9a-95bd-90e1ce86b049": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "time-management",
+      "life-skills",
+      "accountability",
+      "focus-attention"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "da6bc46c-ef93-478c-bc56-7b330a61df98": {
+    "personality_tags": [
+      "empathetic"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "motivation",
+      "confidence",
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "1fb19f75-303e-4e26-bf08-17e8ce28fb9e": {
+    "personality_tags": [
+      "patient",
+      "empathetic",
+      "encouraging",
+      "calm"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "75285095-406c-4111-9058-8e52be089ee1": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "0a2ab47e-a67c-48e6-b42b-ddc31ae921f5": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "c4a8d0cd-6505-4c24-ab15-00249b94a355": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "04fcaaa8-3195-4376-a7b5-b9c912cdffe0": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "study-habits",
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "75ae74f4-c4fc-4737-9fa9-70aed7f94dbf": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "time-management",
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management"
+      ]
+    },
+    "source": "keyword"
+  },
+  "e6a5009e-32dc-4c0b-9d94-6b053fe791c7": {
+    "personality_tags": [
+      "patient"
+    ],
+    "offered_focus": [
+      "communication"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "5149905f-4e33-4a7d-8457-970ff2734986": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "exam-prep",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "f6a9ecdc-a979-4844-bbae-81461c338de1": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 6",
+      "needs": [
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "5a226e39-52b0-4b6f-b45c-de42e259e497": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "time-management",
+      "life-skills",
+      "accountability",
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "a2242b90-cdaf-4abe-a593-080d933c6611": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "f907b923-fb87-455a-9608-e2cd5ae6428c": {
+    "personality_tags": [
+      "energetic"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "d692a48e-0ac4-4ad8-9275-21b4263ead85": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "exam-prep"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "e715b881-a140-4644-bbf5-6d96d9ac82c1": {
+    "personality_tags": [
+      "structured",
+      "detail-oriented"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  },
+  "83d01e8a-ff01-4031-8f64-e0f97dd6e73e": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "time-management",
+      "life-skills",
+      "accountability",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "75cb16ce-9e2f-4425-a8d2-6d14381a9359": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "confidence"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "confidence"
+      ]
+    },
+    "source": "keyword"
+  },
+  "ba626fab-bf0c-433e-a910-2c6c9dad8fa9": {
+    "personality_tags": [
+      "patient",
+      "motivating",
+      "empathetic"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "time-management",
+      "study-habits",
+      "life-skills",
+      "accountability"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "time-management",
+        "study-habits",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "fa0885c3-6e5b-4f8b-9c1b-8f0e0ad589e9": {
+    "personality_tags": [
+      "friendly",
+      "structured",
+      "calm"
+    ],
+    "offered_focus": [
+      "time-management",
+      "life-skills",
+      "accountability",
+      "stress-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management",
+        "life-skills",
+        "accountability"
+      ]
+    },
+    "source": "keyword"
+  },
+  "7df1be56-0bf6-4a4b-9ade-a426dde710c6": {
+    "personality_tags": [
+      "friendly",
+      "structured"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": [
+        "study-habits"
+      ]
+    },
+    "source": "keyword"
+  },
+  "120e0bc2-7cc0-4701-8752-e21bc0d0af78": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "d1a6f1ce-0776-4e3d-9b6a-733d6367f9c5": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "study-habits",
+      "life-skills",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "emotional-support",
+        "study-habits",
+        "life-skills"
+      ]
+    },
+    "source": "keyword"
+  },
+  "4323b132-7d86-4ca7-97f3-3f35dbf02036": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "confidence",
+      "communication",
+      "focus-attention"
+    ],
+    "preferred_student": {
+      "grade_band": "grades 7",
+      "needs": [
+        "confidence",
+        "communication"
+      ]
+    },
+    "source": "keyword"
+  },
+  "625fd648-f21e-455c-8441-93e9881cd75c": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits",
+      "accountability",
+      "exam-prep",
+      "career-orientation"
+    ],
+    "preferred_student": {
+      "grade_band": "lớp 7",
+      "needs": [
+        "study-habits",
+        "accountability",
+        "career-orientation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "3b802f11-ebd4-4ea6-8436-f51038814cc1": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "motivation"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "motivation"
+      ]
+    },
+    "source": "keyword"
+  },
+  "04a063d3-97c5-40e9-8037-d16581bb7584": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "emotional-support",
+      "time-management"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": [
+        "time-management"
+      ]
+    },
+    "source": "keyword"
+  },
+  "72a243a1-b554-4407-9655-0ceb0a5c8955": {
+    "personality_tags": [
+      "friendly"
+    ],
+    "offered_focus": [
+      "study-habits"
+    ],
+    "preferred_student": {
+      "grade_band": null,
+      "needs": []
+    },
+    "source": "keyword"
+  }
+}

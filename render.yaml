@@ -1,0 +1,14 @@
+# Render Blueprint — create the service with: New + > Blueprint > pick this repo.
+services:
+  - type: web
+    name: teencare-mentor-matcher
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /_stcore/health
+    autoDeploy: false        # CI (GitHub Actions) triggers deploy after tests pass
+    envVars:
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_API_KEY  # set the secret in the Render dashboard; enables live enrichment
+        sync: false

@@ -1,0 +1,19 @@
+# Interviewer overrides — applied without editing code.
+# Re-run the matcher (CLI or Streamlit) after editing this file.
+
+# Force a student onto a specific mentor (skips constraints/scoring for the pair).
+force: []
+#  - student_id: <uuid>
+#    mentor_id: <uuid>
+
+# Forbid a student-mentor pairing (the edge is removed before matching).
+block: []
+#  - student_id: <uuid>
+#    mentor_id: <uuid>
+
+# Remove people from the pool entirely.
+skip_students: []
+#  - <uuid>
+
+skip_mentors: []
+#  - <uuid>

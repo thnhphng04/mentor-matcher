@@ -1,0 +1,35 @@
+# Mentor-Student matching configuration.
+# Everything here is tunable by the interviewer without touching code.
+
+# --- Q1 hard constraints -------------------------------------------------
+session_length_minutes: 30      # a student session needs this much room inside a mentor window
+max_students_per_mentor: 12     # ceiling on top of slot-derived capacity (null = no extra cap)
+enforce_gender: true            # honour the parent's requested mentor gender (hard) when stated
+
+# --- Q2/Q3 soft scoring weights (relative; need not sum to 1) ------------
+weights:
+  focus_overlap: 1.0    # student desired_focus  vs mentor offered_focus
+  trait_match: 0.6      # student desired_traits vs mentor personality_tags
+  symptom_fit: 0.8      # student symptom_category vs mentor preferred_student.needs (two-way)
+  mentor_pref: 0.6      # mentor preferred_student profile satisfied by the student (two-way)
+
+# --- thresholds ----------------------------------------------------------
+thresholds:
+  min_acceptable_score: 0.30    # "good enough" line used in coverage metrics
+  poor_fit_threshold: 0.15      # feasible pairs below this are flagged to the review queue
+
+# --- Q4 rejection / re-match --------------------------------------------
+rejection_probability: 0.20
+random_seed: 42
+
+# --- engine --------------------------------------------------------------
+engine: optimal                 # "optimal" (min-cost flow) | "greedy" (baseline)
+
+# --- enrichment ----------------------------------------------------------
+enrichment:
+  provider: openai
+  model_env: OPENAI_MODEL       # env var holding the model id
+  default_model: gpt-4o-mini    # used if the env var is unset
+  use_batch: true               # CLI offline pass uses the Batch API (50% cheaper)
+  cache_dir: data/cache
+  max_workers: 8                # concurrency for the in-app synchronous path
