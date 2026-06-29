@@ -11,5 +11,9 @@ services:
     envVars:
       - key: OPENAI_MODEL
         value: gpt-4o-mini
-      - key: OPENAI_API_KEY  # set the secret in the Render dashboard; enables live enrichment
+      - key: OPENAI_API_KEY  # set in the Render dashboard; enables LLM enrichment
+        sync: false
+      - key: SUPABASE_URL    # set in the dashboard; persists enrichment across redeploys
+        sync: false
+      - key: SUPABASE_KEY    # Supabase service-role key (secret)
         sync: false

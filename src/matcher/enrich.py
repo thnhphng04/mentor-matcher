@@ -1,17 +1,19 @@
-"""Turn messy bilingual (VI/EN) free text into structured tags.
+"""Turn messy bilingual (VI/EN) free text into structured tags — LLM only.
 
-Two enrichment paths share one cache schema on disk:
+The semantic tags (focus areas, traits, symptoms, mentor preferences) come
+**only** from the OpenAI Structured-Outputs enrichment:
 
-* **LLM** (OpenAI Structured Outputs) — higher quality; ``enrich_sync`` runs the
-  interactive/in-app concurrent path, ``enrich_batch`` runs the cheap offline
-  Batch-API pass.
-* **Keyword/regex fallback** — fully deterministic VI/EN lexicon tagger. It
-  populates every field (not just gender) so the tool runs offline with no API
-  key, and it is the safety net per row when an LLM call fails.
+* ``enrich_sync``  — interactive/in-app concurrent path (with retries).
+* ``enrich_batch`` — cheap offline Batch-API pass (CLI).
+
+Rows that are not yet LLM-enriched (cache miss) or whose calls fail after all
+retries get a **base record**: empty semantic tags, ``source: "unenriched"``.
+The only deterministic field is ``requested_mentor_gender`` — a parser kept as a
+safety floor for the Q1 **hard** gender constraint (the LLM is still primary).
 
 Cache files (JSON, keyed by id) live in ``data/cache``:
     students_enriched.json, mentors_enriched.json
-Each record carries ``source`` in {"llm", "keyword"} for transparency.
+Each record carries ``source`` in {"llm", "unenriched"} for transparency.
 """
 from __future__ import annotations
 
@@ -44,55 +46,6 @@ SYMPTOM_TAGS = [
     "emotional-difficulty", "behavioral", "none",
 ]
 
-# --------------------------------------------------------------------------
-# Bilingual keyword lexicons (phrase substring -> tag). Lower-cased matching.
-# --------------------------------------------------------------------------
-FOCUS_LEXICON: Dict[str, List[str]] = {
-    "emotional-support": ["cảm xúc", "emotion", "tâm lý", "feel", "open up", "mở lòng", "tinh thần"],
-    "time-management": ["quản lý thời gian", "time management", "thời gian", "schedule", "deadline"],
-    "study-habits": ["thói quen học", "study habit", "học tập", "studying", "bài tập", "homework", "academic"],
-    "life-skills": ["kỹ năng sống", "life skill", "soft skill", "kỹ năng mềm"],
-    "accountability": ["tự quản lý", "accountab", "trách nhiệm", "kỷ luật bản thân", "self-management"],
-    "motivation": ["động lực", "motivat", "thay đổi", "improve", "tiến bộ", "progress"],
-    "exam-prep": ["thi", "exam", "kiểm tra", "ôn tập", "test prep"],
-    "confidence": ["tự tin", "confiden", "self-esteem"],
-    "communication": ["giao tiếp", "communicat", "nói chuyện", "express"],
-    "focus-attention": ["tập trung", "focus", "attention", "concentrat", "distract", "phone"],
-    "career-orientation": ["định hướng", "career", "nghề nghiệp", "tương lai", "orientation"],
-    "stress-management": ["căng thẳng", "stress", "áp lực", "pressure", "lo lắng", "anxious", "nervous"],
-}
-TRAIT_LEXICON: Dict[str, List[str]] = {
-    "friendly": ["thân thiện", "friendly", "dễ nói chuyện", "approachable", "warm"],
-    "patient": ["kiên nhẫn", "patient", "nhẹ nhàng"],
-    "structured": ["tỉ mỉ", "structured", "detail", "tóm tắt", "concise", "có hệ thống", "organized"],
-    "motivating": ["truyền cảm hứng", "motivat", "inspir", "khích lệ"],
-    "empathetic": ["đồng cảm", "empath", "thấu hiểu", "understanding", "lắng nghe", "listen"],
-    "disciplined": ["kỷ luật", "disciplin", "nghiêm"],
-    "encouraging": ["động viên", "encourag", "supportive", "hỗ trợ"],
-    "detail-oriented": ["chi tiết", "detail-oriented", "cụ thể", "thorough"],
-    "calm": ["bình tĩnh", "calm", "điềm tĩnh", "patient"],
-    "energetic": ["năng động", "energetic", "nhiệt tình", "enthusiastic"],
-}
-SYMPTOM_LEXICON: Dict[str, List[str]] = {
-    "anxiety": ["lo lắng", "nervous", "anxious", "anxiety", "sợ", "afraid", "worried"],
-    "procrastination": ["trì hoãn", "procrastinat", "delay", "lười", "putting off"],
-    "low-motivation": ["thiếu động lực", "unmotivated", "low motivation", "chán", "disengaged"],
-    "distraction": ["phân tâm", "distract", "phone", "điện thoại", "mất tập trung", "easily distracted"],
-    "low-confidence": ["thiếu tự tin", "low confidence", "rụt rè", "shy", "self-esteem", "insecure"],
-    "social-difficulty": ["khó kết bạn", "social", "bạn bè", "isolat", "withdrawn", "opening up"],
-    "academic-pressure": ["áp lực học", "academic pressure", "điểm số", "grades", "falling behind", "slow to"],
-    "emotional-difficulty": ["cảm xúc", "emotional", "buồn", "stress", "căng thẳng", "overwhelm"],
-    "behavioral": ["hành vi", "behavior", "bướng", "disruptive", "defiant"],
-}
-
-GRADE_RE = re.compile(r"(?:grade|lớp|grades?)\s*(\d{1,2})", re.I)
-
-
-def _match_tags(text: str, lexicon: Dict[str, List[str]]) -> List[str]:
-    low = text.lower()
-    return [tag for tag, kws in lexicon.items() if any(k in low for k in kws)]
-
-
 def extract_requested_gender(text: str, self_gender: str) -> Optional[str]:
     """Parse the parent's requested mentor gender (the hard-constraint field).
 
@@ -116,36 +69,26 @@ def extract_requested_gender(text: str, self_gender: str) -> Optional[str]:
 
 
 # --------------------------------------------------------------------------
-# Deterministic fallback enrichers (full records).
+# Base records for rows not yet LLM-enriched (cache miss or failed call).
+# Semantic tags are empty (so they score 0 until enriched); only the hard-
+# constraint gender field is parsed deterministically as a safety floor.
 # --------------------------------------------------------------------------
-def keyword_enrich_student(s: Student) -> dict:
-    text = f"{s.expectation} {s.symptom}"
-    focus = _match_tags(text, FOCUS_LEXICON) or ["study-habits"]
-    traits = _match_tags(s.expectation, TRAIT_LEXICON)
-    sym = _match_tags(s.symptom, SYMPTOM_LEXICON)
+def base_student_record(s: Student) -> dict:
     return {
         "requested_mentor_gender": extract_requested_gender(s.expectation, s.gender),
-        "desired_focus": focus,
-        "desired_traits": traits,
-        "symptom_category": sym[0] if sym else "none",
-        "source": "keyword",
+        "desired_focus": [],
+        "desired_traits": [],
+        "symptom_category": "none",
+        "source": "unenriched",
     }
 
 
-def keyword_enrich_mentor(m: Mentor) -> dict:
-    text = f"{m.personalites} {m.expectation}"
-    traits = _match_tags(m.personalites, TRAIT_LEXICON) or ["friendly"]
-    focus = _match_tags(text, FOCUS_LEXICON) or ["study-habits"]
-    needs = _match_tags(m.expectation, FOCUS_LEXICON)
-    grade = GRADE_RE.search(m.expectation)
+def base_mentor_record(m: Mentor) -> dict:
     return {
-        "personality_tags": traits,
-        "offered_focus": focus,
-        "preferred_student": {
-            "grade_band": grade.group(0) if grade else None,
-            "needs": needs,
-        },
-        "source": "keyword",
+        "personality_tags": [],
+        "offered_focus": [],
+        "preferred_student": {"grade_band": None, "needs": []},
+        "source": "unenriched",
     }
 
 
@@ -233,10 +176,10 @@ def enrich_sync(items, kind: str, model: str, api_key: Optional[str],
     client = _client(api_key)
     if kind == "student":
         sys, payload_fn, schema = _STUDENT_SYS, _student_payload, _student_schema()
-        fallback = keyword_enrich_student
+        fallback = base_student_record
     else:
         sys, payload_fn, schema = _MENTOR_SYS, _mentor_payload, _mentor_schema()
-        fallback = keyword_enrich_mentor
+        fallback = base_mentor_record
 
     out: Dict[str, dict] = {}
     total = len(items)
@@ -270,15 +213,15 @@ def enrich_batch(items, kind: str, model: str, api_key: Optional[str],
                  poll_seconds: int = 10, timeout_seconds: int = 24 * 3600) -> Dict[str, dict]:
     """Offline OpenAI Batch API pass (50% cheaper). Used by the CLI.
 
-    Falls back to keyword enrichment for any request the batch didn't return.
+    Any request the batch didn't return is left as a base (unenriched) record.
     """
     client = _client(api_key)
     if kind == "student":
         sys, payload_fn, schema = _STUDENT_SYS, _student_payload, _student_schema()
-        fallback = keyword_enrich_student
+        fallback = base_student_record
     else:
         sys, payload_fn, schema = _MENTOR_SYS, _mentor_payload, _mentor_schema()
-        fallback = keyword_enrich_mentor
+        fallback = base_mentor_record
 
     lines = []
     for it in items:
@@ -337,6 +280,12 @@ def _cache_file(cfg: Config, kind: str) -> Path:
 
 
 def load_cache(cfg: Config, kind: str) -> Dict[str, dict]:
+    """Load enriched tags from the active backend (Supabase if configured,
+    else the local JSON file)."""
+    from . import store
+    remote = store.remote_load(kind)
+    if remote is not None:
+        return remote
     f = _cache_file(cfg, kind)
     if f.exists():
         return json.loads(f.read_text(encoding="utf-8"))
@@ -344,6 +293,11 @@ def load_cache(cfg: Config, kind: str) -> Dict[str, dict]:
 
 
 def save_cache(cfg: Config, kind: str, data: Dict[str, dict]) -> None:
+    """Persist enriched tags to the active backend (Supabase if configured,
+    else the local JSON file)."""
+    from . import store
+    if store.remote_save(kind, data):
+        return
     cfg.cache_path.mkdir(parents=True, exist_ok=True)
     _cache_file(cfg, kind).write_text(
         json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -353,18 +307,12 @@ def get_enrichment(students: List[Student], mentors: List[Mentor], cfg: Config
                    ) -> tuple[Dict[str, dict], Dict[str, dict]]:
     """Return (student_records, mentor_records).
 
-    Uses the committed cache where present; any id missing from cache is filled
-    with the deterministic keyword enricher (so the matcher always has tags,
-    even with no API key and an empty cache).
+    Uses LLM-enriched tags from the cache where present; any id missing from
+    cache gets a base (unenriched) record — empty semantic tags plus a parsed
+    gender for the hard constraint — so the matcher always has a record.
     """
     scache = load_cache(cfg, "student")
     mcache = load_cache(cfg, "mentor")
-    srecs = {s.id: scache.get(s.id) or keyword_enrich_student(s) for s in students}
-    mrecs = {m.id: mcache.get(m.id) or keyword_enrich_mentor(m) for m in mentors}
+    srecs = {s.id: scache.get(s.id) or base_student_record(s) for s in students}
+    mrecs = {m.id: mcache.get(m.id) or base_mentor_record(m) for m in mentors}
     return srecs, mrecs
-
-
-def build_keyword_cache(students: List[Student], mentors: List[Mentor], cfg: Config) -> None:
-    """Generate a full committed cache deterministically (no API needed)."""
-    save_cache(cfg, "student", {s.id: keyword_enrich_student(s) for s in students})
-    save_cache(cfg, "mentor", {m.id: keyword_enrich_mentor(m) for m in mentors})
