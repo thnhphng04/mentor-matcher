@@ -222,12 +222,13 @@ def _one_llm_call(client, model: str, system: str, payload: str, schema: dict, n
 
 
 def enrich_sync(items, kind: str, model: str, api_key: Optional[str],
-                max_workers: int = 8,
+                max_workers: int = 8, max_retries: int = 2,
                 progress_cb: Optional[Callable[[int, int], None]] = None) -> Dict[str, dict]:
     """Concurrent synchronous enrichment (interactive / in-app path).
 
-    Per-item failures fall back to the keyword enricher so one bad row never
-    sinks the whole run. ``kind`` is "student" or "mentor".
+    Each row is attempted up to ``1 + max_retries`` times (short backoff between
+    attempts); only after all attempts fail does it fall back to the keyword
+    enricher, so one flaky row never sinks the run. ``kind`` is "student"/"mentor".
     """
     client = _client(api_key)
     if kind == "student":
@@ -242,12 +243,17 @@ def enrich_sync(items, kind: str, model: str, api_key: Optional[str],
     done = 0
 
     def work(it):
-        try:
-            rec = _one_llm_call(client, model, sys, payload_fn(it), schema, kind)
-            rec["source"] = "llm"
-            return it.id, rec
-        except Exception:
-            return it.id, fallback(it)
+        for attempt in range(1 + max_retries):
+            try:
+                rec = _one_llm_call(client, model, sys, payload_fn(it), schema, kind)
+                rec["source"] = "llm"
+                return it.id, rec
+            except Exception:
+                if attempt < max_retries:
+                    time.sleep(0.5 * (attempt + 1))  # 0.5s, 1.0s backoff
+        rec = fallback(it)
+        rec["llm_failed"] = True  # transparency: API exhausted retries for this row
+        return it.id, rec
 
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
         futures = [ex.submit(work, it) for it in items]

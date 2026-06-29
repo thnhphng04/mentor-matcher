@@ -45,7 +45,8 @@ def cmd_enrich(args):
         elif args.sync:
             print(f"[{kind}] sync enrichment via {model} ({len(items)} rows)")
             recs = enrich_mod.enrich_sync(items, kind, model, key, cfg.enrichment.max_workers,
-                                          lambda d, t: print(f"  {d}/{t}", end="\r"))
+                                          cfg.enrichment.max_retries,
+                                          progress_cb=lambda d, t: print(f"  {d}/{t}", end="\r"))
             print()
         else:
             print(f"[{kind}] BATCH enrichment via {model} ({len(items)} rows) — polling...")
