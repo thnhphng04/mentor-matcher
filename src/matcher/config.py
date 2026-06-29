@@ -35,6 +35,7 @@ class Enrichment(BaseModel):
     use_batch: bool = True
     cache_dir: str = "data/cache"
     max_workers: int = 8
+    max_retries: int = 2          # extra LLM attempts per row before keyword fallback
 
     def resolve_model(self) -> str:
         return os.environ.get(self.model_env) or self.default_model

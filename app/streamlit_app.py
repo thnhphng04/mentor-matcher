@@ -8,6 +8,7 @@ is nothing to paste on open. Runs offline from the committed cache without a key
 from __future__ import annotations
 
 import collections
+import json
 import os
 import sys
 from pathlib import Path
@@ -176,6 +177,27 @@ with tab_data:
         st.success("Reverted to the bundled dataset.")
         st.rerun()
 
+    st.subheader("🧠 Enrichment cache")
+    sc = dict(collections.Counter(r.get("source", "keyword") for r in st.session_state.srecs.values()))
+    mc = dict(collections.Counter(r.get("source", "keyword") for r in st.session_state.mrecs.values()))
+    st.caption(f"Structured tags by source — students: {sc} · mentors: {mc} "
+               f"(saved to `{file_cfg.enrichment.cache_dir}`)")
+    e1, e2, e3 = st.columns(3)
+    if e1.button("💾 Save tags to cache"):
+        enrich_mod.save_cache(file_cfg, "student", st.session_state.srecs)
+        enrich_mod.save_cache(file_cfg, "mentor", st.session_state.mrecs)
+        st.success(f"Saved {len(st.session_state.srecs)} student + "
+                   f"{len(st.session_state.mrecs)} mentor tag records to cache.")
+    e2.download_button("⬇ students_enriched.json",
+                       json.dumps(st.session_state.srecs, ensure_ascii=False, indent=2),
+                       "students_enriched.json", "application/json")
+    e3.download_button("⬇ mentors_enriched.json",
+                       json.dumps(st.session_state.mrecs, ensure_ascii=False, indent=2),
+                       "mentors_enriched.json", "application/json")
+    st.caption("On the deployed app the container disk is ephemeral — use the download "
+               "buttons and commit the JSON to the repo for permanent reuse, or attach a "
+               "Render persistent disk at the cache path.")
+
     st.subheader("👀 Current data")
     dt1, dt2 = st.tabs([f"Students ({len(st.session_state.students)})",
                         f"Mentors ({len(st.session_state.mentors)})"])
@@ -217,10 +239,17 @@ with tab_match:
             bar = st.progress(0.0, text="Calling OpenAI…")
             recs = enrich_mod.enrich_sync(
                 items, kind, model, key, file_cfg.enrichment.max_workers,
+                file_cfg.enrichment.max_retries,
                 progress_cb=lambda d, t: bar.progress(d / t, text=f"Enriched {d}/{t}"))
-            (st.session_state.srecs if kind == "student" else st.session_state.mrecs).update(recs)
+            full = st.session_state.srecs if kind == "student" else st.session_state.mrecs
+            full.update(recs)
+            enrich_mod.save_cache(file_cfg, kind, full)   # persist tags for reuse
             bar.empty()
-            st.success(f"Live-enriched {len(recs)} {kind} rows with {model}.")
+            n_failed = sum(r.get("llm_failed") for r in recs.values())
+            msg = f"Live-enriched {len(recs)} {kind} rows with {model} — saved to cache for reuse."
+            if n_failed:
+                msg += f" ({n_failed} rows fell back to keyword after retries.)"
+            st.success(msg)
             srecs, mrecs = st.session_state.srecs, st.session_state.mrecs
 
     def _src_counts(recs):

@@ -33,3 +33,4 @@ enrichment:
   use_batch: true               # CLI offline pass uses the Batch API (50% cheaper)
   cache_dir: data/cache
   max_workers: 8                # concurrency for the in-app synchronous path
+  max_retries: 2                # extra LLM attempts per row before keyword fallback
