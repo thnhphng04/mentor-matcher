@@ -69,9 +69,16 @@ def _parse_student_slots(raw: str) -> List[Slot]:
     return [Slot(s["day"].lower(), to_minutes(s["start_time"])) for s in json.loads(raw)]
 
 
-def load_mentors(path: str | Path | None = None) -> List[Mentor]:
-    path = Path(path) if path else ROOT / "data" / "mentors_prod_200_enriched.csv"
-    df = pd.read_csv(path)
+MENTOR_COLUMNS = ["ID", "Name", "gender", "capacity", "personalites", "expectation"]
+STUDENT_COLUMNS = ["ID", "Name", "gender", "learning_slot", "symptom", "expectation"]
+
+
+def validate_columns(df: pd.DataFrame, required: List[str]) -> List[str]:
+    """Return the list of required columns missing from ``df`` (empty == valid)."""
+    return [c for c in required if c not in df.columns]
+
+
+def mentors_from_df(df: pd.DataFrame) -> List[Mentor]:
     out: List[Mentor] = []
     for _, r in df.iterrows():
         out.append(Mentor(
@@ -85,9 +92,7 @@ def load_mentors(path: str | Path | None = None) -> List[Mentor]:
     return out
 
 
-def load_students(path: str | Path | None = None) -> List[Student]:
-    path = Path(path) if path else ROOT / "data" / "students_prod_2000_enriched.csv"
-    df = pd.read_csv(path)
+def students_from_df(df: pd.DataFrame) -> List[Student]:
     out: List[Student] = []
     for _, r in df.iterrows():
         out.append(Student(
@@ -99,3 +104,13 @@ def load_students(path: str | Path | None = None) -> List[Student]:
             expectation=str(r.get("expectation", "") or ""),
         ))
     return out
+
+
+def load_mentors(path: str | Path | None = None) -> List[Mentor]:
+    path = path if path is not None else ROOT / "data" / "mentors_prod_200_enriched.csv"
+    return mentors_from_df(pd.read_csv(path))
+
+
+def load_students(path: str | Path | None = None) -> List[Student]:
+    path = path if path is not None else ROOT / "data" / "students_prod_2000_enriched.csv"
+    return students_from_df(pd.read_csv(path))

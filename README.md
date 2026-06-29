@@ -71,7 +71,11 @@ Two paths, one cache schema (`data/cache/*.json`), using **Structured Outputs** 
 - **Offline / bulk** — `python -m matcher.cli enrich` uses the **Batch API** (50% cheaper) for the full 2,200 rows.
 - **Live / in-app** — the **"LLM enrichment"** panel in the Streamlit app: paste a key, pick a model + sample size, click **Run** → concurrent calls with a progress bar; tags update and matching recomputes.
 
-Model is config/env-driven (`OPENAI_MODEL`, default `gpt-4o-mini`); key from the UI field, `st.secrets`, or `OPENAI_API_KEY`. With no key, a deterministic VI/EN keyword tagger fills every field (and always backs gender via regex), so the tool never hard-depends on the API.
+Model is config/env-driven (`OPENAI_MODEL`, default `gpt-4o-mini`). **The API key is auto-loaded** from `st.secrets["OPENAI_API_KEY"]` or the `OPENAI_API_KEY` env var — there's **no key box to fill on open**. Set it once on Render (env var) and locally in `.streamlit/secrets.toml` (git-ignored — see `.streamlit/secrets.toml.example`). The key is never committed. With no key, a deterministic VI/EN keyword tagger fills every field (and always backs gender via regex), so the tool never hard-depends on the API.
+
+### Data management (Data tab)
+
+The app's **Data** tab shows the current students/mentors tables, lets you **upload replacement CSVs** (validated against the required columns — upload one or both), **reset** back to the bundled dataset, and download the current data. Uploaded data lives for the session (the deployed container's filesystem is ephemeral).
 
 ## Deployment
 
