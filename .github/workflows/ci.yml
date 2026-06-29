@@ -1,8 +1,9 @@
-name: CI/CD
+name: CI
 
+# Render auto-deploys `main` on push. This workflow only runs tests, so you get
+# a red/green signal on every branch and pull request before merging to main.
 on:
   push:
-    branches: [main]
   pull_request:
 
 jobs:
@@ -21,19 +22,3 @@ jobs:
         run: pytest -q
       - name: Smoke-run the matcher (offline cache)
         run: python -m matcher.cli run
-
-  deploy:
-    # Deploy to Render only after tests pass, on push to main.
-    needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Render deploy
-        env:
-          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
-        run: |
-          if [ -z "$HOOK" ]; then
-            echo "RENDER_DEPLOY_HOOK secret not set — skipping deploy."
-            exit 0
-          fi
-          curl -fsSL "$HOOK"

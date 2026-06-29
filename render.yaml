@@ -6,7 +6,8 @@ services:
     dockerfilePath: ./Dockerfile
     plan: free
     healthCheckPath: /_stcore/health
-    autoDeploy: false        # CI (GitHub Actions) triggers deploy after tests pass
+    branch: main             # only this branch deploys; feature branches do not
+    autoDeploy: true         # Render auto-deploys on push to `main`
     envVars:
       - key: OPENAI_MODEL
         value: gpt-4o-mini

@@ -75,12 +75,22 @@ Model is config/env-driven (`OPENAI_MODEL`, default `gpt-4o-mini`); key from the
 
 ## Deployment
 
-**Render + GitHub Actions (CI/CD):**
+**Render + GitHub Actions:**
 
 1. Push this repo to GitHub.
-2. On Render: **New ▸ Blueprint**, select the repo (`render.yaml` defines a Docker web service with a `/_stcore/health` check). Set **`OPENAI_API_KEY`** as a service env var to enable live enrichment.
-3. Copy the service's **Deploy Hook** URL → add it as the GitHub Actions secret **`RENDER_DEPLOY_HOOK`**.
-4. Push to `main` → [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `pytest` + a smoke match, then triggers the Render deploy on green. Public URL: `https://<service>.onrender.com`.
+2. On Render: **New ▸ Blueprint**, select the repo (`render.yaml` defines a Docker web service that auto-deploys the `main` branch, with a `/_stcore/health` check). Set **`OPENAI_API_KEY`** as a service env var to enable live enrichment.
+3. Render auto-deploys every push to `main` → public URL `https://<service>.onrender.com`.
+4. [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `pytest` + a smoke match on every branch and PR, so you get a red/green signal before merging.
+
+**Branch workflow** (develop/test on a branch, deploy by merging to `main`):
+
+```bash
+git checkout -b feature/x       # work on a branch — does NOT deploy
+pytest -q                       # test locally
+streamlit run app/streamlit_app.py
+git push -u origin feature/x    # CI runs tests; still no deploy
+# open a PR, merge to main  ->  Render auto-deploys
+```
 
 Run the same image locally:
 
