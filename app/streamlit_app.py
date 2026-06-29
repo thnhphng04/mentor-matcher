@@ -245,7 +245,7 @@ with tab_match:
             full.update(recs)
             enrich_mod.save_cache(file_cfg, kind, full)   # persist tags for reuse
             bar.empty()
-            n_failed = sum(r.get("llm_failed") for r in recs.values())
+            n_failed = sum(1 for r in recs.values() if r.get("llm_failed"))
             msg = f"Live-enriched {len(recs)} {kind} rows with {model} — saved to cache for reuse."
             if n_failed:
                 msg += f" ({n_failed} rows fell back to keyword after retries.)"
