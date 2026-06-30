@@ -34,6 +34,7 @@ STRINGS = {
         "kind_mentor": "mentor",
         # --- tabs ---
         "tab_data": "📁 Data & Enrichment",
+        "tab_questions": "❓ Questions",
         "tab_enrichment": "🤖 Enrichment",
         "raw_data": "Raw data",
         "enriched_tags": "Enriched tags",
@@ -53,10 +54,6 @@ STRINGS = {
         "stage_done": "Done.",
         "stage_initial": "Initial match (Q3) — {inner}",
         "stage_final": "Re-matching rejected students — {inner}",
-        "tab_q1": "1️⃣ Q1 · Feasible",
-        "tab_q2": "2️⃣ Q2 · Parent expectations",
-        "tab_q3": "3️⃣ Q3 · Two-way fit",
-        "tab_q4": "4️⃣ Q4 · Rejection & re-match",
         # --- data tab ---
         "m_students": "Students",
         "m_mentors": "Mentors",
@@ -183,6 +180,7 @@ STRINGS = {
         "kind_mentor": "mentor",
         # --- tabs ---
         "tab_data": "📁 Dữ liệu & Làm giàu",
+        "tab_questions": "❓ Câu hỏi",
         "tab_enrichment": "🤖 Làm giàu (LLM)",
         "raw_data": "Dữ liệu gốc",
         "enriched_tags": "Nhãn đã làm giàu",
@@ -202,10 +200,6 @@ STRINGS = {
         "stage_done": "Hoàn tất.",
         "stage_initial": "Ghép ban đầu (Q3) — {inner}",
         "stage_final": "Đang ghép lại học sinh bị từ chối — {inner}",
-        "tab_q1": "1️⃣ Q1 · Khả thi",
-        "tab_q2": "2️⃣ Q2 · Kỳ vọng phụ huynh",
-        "tab_q3": "3️⃣ Q3 · Phù hợp hai chiều",
-        "tab_q4": "4️⃣ Q4 · Từ chối & ghép lại",
         # --- data tab ---
         "m_students": "Học sinh",
         "m_mentors": "Mentor",

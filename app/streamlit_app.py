@@ -315,7 +315,7 @@ sb.multiselect(t("skip_students"), options=list(_student_label),
 sb.multiselect(t("skip_mentors"), options=list(_mentor_label),
                format_func=lambda i: _mentor_label[i], key="skip_m")
 
-tabs = st.tabs([t("tab_data"), t("tab_q1"), t("tab_q2"), t("tab_q3"), t("tab_q4")])
+tabs = st.tabs([t("tab_data"), t("tab_questions")])
 
 # ------------------- DATA & ENRICHMENT TAB (merged) -----------------------
 with tabs[0]:
@@ -379,118 +379,120 @@ with tabs[0]:
     with dment:
         _raw_and_enriched(st.session_state.mentors_df, "mentor")
 
-# ------------------------------ Q1 ----------------------------------------
+# --------------------------- QUESTIONS TAB (Q1-Q4 stacked) -----------------
 with tabs[1]:
-    st.subheader(t("q1_title"))
-    st.caption(t("q1_caption"))
-    c1, c2 = st.columns(2)
-    c1.slider(t("session_len"), 15, 120, file_cfg.session_length_minutes, 15, key="q1_session_len")
-    c2.slider(t("max_cap"), 1, 30, file_cfg.max_students_per_mentor or 12, key="q1_max_cap")
-    c1.checkbox(t("enforce_gender"), file_cfg.enforce_gender, key="q1_enforce_gender")
-    c2.selectbox(t("engine"), ["optimal", "greedy"],
-                 index=0 if file_cfg.engine == "optimal" else 1, key="q1_engine")
-    if st.button(t("run_q1"), type="primary", key="run_q1"):
-        cfg = build_config()
-        bar, cb = _progress_bar()
-        res = _match(cfg, cfg.engine, progress_cb=cb)
-        bar.empty()
-        st.session_state.q1 = (res, cfg)
-    if "q1" in st.session_state:
-        res, cfg = st.session_state.q1
-        show_metrics(res, cfg)
-        ta, tb = st.tabs([t("assignments"), t("unassigned_why")])
-        with ta:
-            show_assignments(res, "q1")
-        with tb:
-            show_unassigned(res)
-    else:
-        st.info(t("q1_info"))
+    # ------------------------------ Q1 --------------------------------
+    with st.container(border=True):
+        st.subheader(t("q1_title"))
+        st.caption(t("q1_caption"))
+        c1, c2 = st.columns(2)
+        c1.slider(t("session_len"), 15, 120, file_cfg.session_length_minutes, 15, key="q1_session_len")
+        c2.slider(t("max_cap"), 1, 30, file_cfg.max_students_per_mentor or 12, key="q1_max_cap")
+        c1.checkbox(t("enforce_gender"), file_cfg.enforce_gender, key="q1_enforce_gender")
+        c2.selectbox(t("engine"), ["optimal", "greedy"],
+                     index=0 if file_cfg.engine == "optimal" else 1, key="q1_engine")
+        if st.button(t("run_q1"), type="primary", key="run_q1"):
+            cfg = build_config()
+            bar, cb = _progress_bar()
+            res = _match(cfg, cfg.engine, progress_cb=cb)
+            bar.empty()
+            st.session_state.q1 = (res, cfg)
+        if "q1" in st.session_state:
+            res, cfg = st.session_state.q1
+            show_metrics(res, cfg)
+            ta, tb = st.tabs([t("assignments"), t("unassigned_why")])
+            with ta:
+                show_assignments(res, "q1")
+            with tb:
+                show_unassigned(res)
+        else:
+            st.info(t("q1_info"))
 
-# ------------------------------ Q2 ----------------------------------------
-with tabs[2]:
-    st.subheader(t("q2_title"))
-    st.caption(t("q2_caption"))
-    st.caption(_q1_settings_caption())
-    c1, c2 = st.columns(2)
-    f = c1.slider(t("q2_focus_w"), 0.0, 2.0, file_cfg.weights.focus_overlap, 0.1, key="q2_focus")
-    tr = c2.slider(t("q2_trait_w"), 0.0, 2.0, file_cfg.weights.trait_match, 0.1, key="q2_trait")
-    st.slider(t("min_acc"), 0.0, 1.0, file_cfg.thresholds.min_acceptable_score, 0.05, key="q23_min_acc")
-    if st.button(t("run_q2"), type="primary", key="run_q2"):
-        cfg = build_config(focus=f, trait=tr)
-        bar, cb = _progress_bar()
-        res = _match(cfg, cfg.engine, progress_cb=_scaled_cb(cb, 0.0, 0.75))
-        base = _match(cfg, "random", progress_cb=_scaled_cb(cb, 0.75, 1.0))
-        bar.empty()
-        st.session_state.q2 = (res, cfg, base)
-    if "q2" in st.session_state:
-        res, cfg, base = st.session_state.q2
-        show_metrics(res, cfg, baseline=base)
-        show_assignments(res, "q2")
-    else:
-        st.info(t("q2_info"))
+    # ------------------------------ Q2 --------------------------------
+    with st.container(border=True):
+        st.subheader(t("q2_title"))
+        st.caption(t("q2_caption"))
+        st.caption(_q1_settings_caption())
+        c1, c2 = st.columns(2)
+        f = c1.slider(t("q2_focus_w"), 0.0, 2.0, file_cfg.weights.focus_overlap, 0.1, key="q2_focus")
+        tr = c2.slider(t("q2_trait_w"), 0.0, 2.0, file_cfg.weights.trait_match, 0.1, key="q2_trait")
+        st.slider(t("min_acc"), 0.0, 1.0, file_cfg.thresholds.min_acceptable_score, 0.05, key="q23_min_acc")
+        if st.button(t("run_q2"), type="primary", key="run_q2"):
+            cfg = build_config(focus=f, trait=tr)
+            bar, cb = _progress_bar()
+            res = _match(cfg, cfg.engine, progress_cb=_scaled_cb(cb, 0.0, 0.75))
+            base = _match(cfg, "random", progress_cb=_scaled_cb(cb, 0.75, 1.0))
+            bar.empty()
+            st.session_state.q2 = (res, cfg, base)
+        if "q2" in st.session_state:
+            res, cfg, base = st.session_state.q2
+            show_metrics(res, cfg, baseline=base)
+            show_assignments(res, "q2")
+        else:
+            st.info(t("q2_info"))
 
-# ------------------------------ Q3 ----------------------------------------
-with tabs[3]:
-    st.subheader(t("q3_title"))
-    st.caption(t("q3_caption"))
-    st.caption(_q1_settings_caption())
-    c1, c2 = st.columns(2)
-    sym = c1.slider(t("q3_symptom_w"), 0.0, 2.0, file_cfg.weights.symptom_fit, 0.1, key="q3_symptom")
-    mp = c2.slider(t("q3_pref_w"), 0.0, 2.0, file_cfg.weights.mentor_pref, 0.1, key="q3_pref")
-    st.slider(t("poor_fit"), 0.0, 1.0, file_cfg.thresholds.poor_fit_threshold, 0.05, key="q3_poor_fit")
-    qf = st.session_state.get("q2_focus", file_cfg.weights.focus_overlap)
-    qt = st.session_state.get("q2_trait", file_cfg.weights.trait_match)
-    st.caption(t("q3_inherits", focus=qf, trait=qt))
-    if st.button(t("run_q3"), type="primary", key="run_q3"):
-        cfg = build_config(focus=qf, trait=qt, symptom=sym, mentor_pref=mp)
-        bar, cb = _progress_bar()
-        res = _match(cfg, cfg.engine, progress_cb=_scaled_cb(cb, 0.0, 0.75))
-        base = _match(cfg, "random", progress_cb=_scaled_cb(cb, 0.75, 1.0))
-        bar.empty()
-        st.session_state.q3 = (res, cfg, base)
-    if "q3" in st.session_state:
-        res, cfg, base = st.session_state.q3
-        show_metrics(res, cfg, baseline=base)
-        ta, tb = st.tabs([t("assignments"), t("review_queue")])
-        with ta:
-            show_assignments(res, "q3")
-        with tb:
-            st.dataframe(pd.DataFrame(res.review_queue), use_container_width=True, height=360)
-    else:
-        st.info(t("q3_info"))
+    # ------------------------------ Q3 --------------------------------
+    with st.container(border=True):
+        st.subheader(t("q3_title"))
+        st.caption(t("q3_caption"))
+        st.caption(_q1_settings_caption())
+        c1, c2 = st.columns(2)
+        sym = c1.slider(t("q3_symptom_w"), 0.0, 2.0, file_cfg.weights.symptom_fit, 0.1, key="q3_symptom")
+        mp = c2.slider(t("q3_pref_w"), 0.0, 2.0, file_cfg.weights.mentor_pref, 0.1, key="q3_pref")
+        st.slider(t("poor_fit"), 0.0, 1.0, file_cfg.thresholds.poor_fit_threshold, 0.05, key="q3_poor_fit")
+        qf = st.session_state.get("q2_focus", file_cfg.weights.focus_overlap)
+        qt = st.session_state.get("q2_trait", file_cfg.weights.trait_match)
+        st.caption(t("q3_inherits", focus=qf, trait=qt))
+        if st.button(t("run_q3"), type="primary", key="run_q3"):
+            cfg = build_config(focus=qf, trait=qt, symptom=sym, mentor_pref=mp)
+            bar, cb = _progress_bar()
+            res = _match(cfg, cfg.engine, progress_cb=_scaled_cb(cb, 0.0, 0.75))
+            base = _match(cfg, "random", progress_cb=_scaled_cb(cb, 0.75, 1.0))
+            bar.empty()
+            st.session_state.q3 = (res, cfg, base)
+        if "q3" in st.session_state:
+            res, cfg, base = st.session_state.q3
+            show_metrics(res, cfg, baseline=base)
+            ta, tb = st.tabs([t("assignments"), t("review_queue")])
+            with ta:
+                show_assignments(res, "q3")
+            with tb:
+                st.dataframe(pd.DataFrame(res.review_queue), use_container_width=True, height=360)
+        else:
+            st.info(t("q3_info"))
 
-# ------------------------------ Q4 ----------------------------------------
-with tabs[4]:
-    st.subheader(t("q4_title"))
-    st.caption(t("q4_caption"))
-    st.caption(_q1_settings_caption())
-    q4f = st.session_state.get("q2_focus", file_cfg.weights.focus_overlap)
-    q4t = st.session_state.get("q2_trait", file_cfg.weights.trait_match)
-    q4s = st.session_state.get("q3_symptom", file_cfg.weights.symptom_fit)
-    q4p = st.session_state.get("q3_pref", file_cfg.weights.mentor_pref)
-    st.caption(t("q4_inherits", focus=q4f, trait=q4t, symptom=q4s, pref=q4p))
-    c1, c2 = st.columns(2)
-    c1.slider(t("reject_prob"), 0.0, 0.5, file_cfg.rejection_probability, 0.05, key="q4_reject")
-    c2.number_input(t("seed"), value=file_cfg.random_seed, step=1, key="q4_seed")
-    if st.button(t("run_q4"), type="primary", key="run_q4"):
-        cfg = build_config(focus=q4f, trait=q4t, symptom=q4s, mentor_pref=q4p)
-        bar, cb = _progress_bar()
-        rr = simulate_and_rematch(
-            st.session_state.students, st.session_state.mentors,
-            st.session_state.srecs, st.session_state.mrecs, cfg, current_overrides(),
-            progress_cb=cb)
-        bar.empty()
-        st.session_state.q4 = (rr, cfg)
-    if "q4" in st.session_state:
-        rr, cfg = st.session_state.q4
-        before = summarize(rr.initial, len(st.session_state.students), cfg)
-        after = summarize(rr.final, len(st.session_state.students), cfg)
-        m = st.columns(4)
-        m[0].metric(t("rejected"), len(rr.rejected_ids))
-        m[1].metric(t("mean_before"), f"{before['mean_score']:.3f}")
-        m[2].metric(t("mean_after"), f"{after['mean_score']:.3f}",
-                    f"{after['mean_score']-before['mean_score']:+.3f}")
-        m[3].metric(t("coverage_after"), f"{after['coverage']*100:.1f}%")
-        show_assignments(rr.final, "q4")
-    else:
-        st.info(t("q4_info"))
+    # ------------------------------ Q4 --------------------------------
+    with st.container(border=True):
+        st.subheader(t("q4_title"))
+        st.caption(t("q4_caption"))
+        st.caption(_q1_settings_caption())
+        q4f = st.session_state.get("q2_focus", file_cfg.weights.focus_overlap)
+        q4t = st.session_state.get("q2_trait", file_cfg.weights.trait_match)
+        q4s = st.session_state.get("q3_symptom", file_cfg.weights.symptom_fit)
+        q4p = st.session_state.get("q3_pref", file_cfg.weights.mentor_pref)
+        st.caption(t("q4_inherits", focus=q4f, trait=q4t, symptom=q4s, pref=q4p))
+        c1, c2 = st.columns(2)
+        c1.slider(t("reject_prob"), 0.0, 0.5, file_cfg.rejection_probability, 0.05, key="q4_reject")
+        c2.number_input(t("seed"), value=file_cfg.random_seed, step=1, key="q4_seed")
+        if st.button(t("run_q4"), type="primary", key="run_q4"):
+            cfg = build_config(focus=q4f, trait=q4t, symptom=q4s, mentor_pref=q4p)
+            bar, cb = _progress_bar()
+            rr = simulate_and_rematch(
+                st.session_state.students, st.session_state.mentors,
+                st.session_state.srecs, st.session_state.mrecs, cfg, current_overrides(),
+                progress_cb=cb)
+            bar.empty()
+            st.session_state.q4 = (rr, cfg)
+        if "q4" in st.session_state:
+            rr, cfg = st.session_state.q4
+            before = summarize(rr.initial, len(st.session_state.students), cfg)
+            after = summarize(rr.final, len(st.session_state.students), cfg)
+            m = st.columns(4)
+            m[0].metric(t("rejected"), len(rr.rejected_ids))
+            m[1].metric(t("mean_before"), f"{before['mean_score']:.3f}")
+            m[2].metric(t("mean_after"), f"{after['mean_score']:.3f}",
+                        f"{after['mean_score']-before['mean_score']:+.3f}")
+            m[3].metric(t("coverage_after"), f"{after['coverage']*100:.1f}%")
+            show_assignments(rr.final, "q4")
+        else:
+            st.info(t("q4_info"))
