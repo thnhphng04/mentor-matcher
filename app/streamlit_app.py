@@ -16,6 +16,13 @@ from pathlib import Path
 # Make `matcher` importable whether or not the package is installed.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+# Load a local .env (OPENAI_API_KEY / SUPABASE_*) if present.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+except Exception:
+    pass
+
 import pandas as pd
 import streamlit as st
 
