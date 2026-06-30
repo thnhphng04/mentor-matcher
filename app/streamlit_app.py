@@ -359,18 +359,23 @@ with tabs[0]:
                        json.dumps(st.session_state.mrecs, ensure_ascii=False, indent=2),
                        "mentors_enriched.json", "application/json")
 
-    # --- data display: Students/Mentors → Raw / Enriched ---
+    # --- data display: Students/Mentors, raw and enriched in separate frames ---
     st.subheader(t("current_data"))
     dstud, dment = st.tabs([t("students_n", n=len(st.session_state.students)),
                             t("mentors_n", n=len(st.session_state.mentors))])
+
+    def _raw_and_enriched(raw_df, kind):
+        with st.container(border=True):
+            st.markdown(f"**{t('raw_data')}**")
+            st.dataframe(raw_df, use_container_width=True, height=300)
+        with st.container(border=True):
+            st.markdown(f"**{t('enriched_tags')}**")
+            st.dataframe(enriched_df(kind), use_container_width=True, height=300)
+
     with dstud:
-        rs, es = st.tabs([t("raw_data"), t("enriched_tags")])
-        rs.dataframe(st.session_state.students_df, use_container_width=True, height=360)
-        es.dataframe(enriched_df("student"), use_container_width=True, height=360)
+        _raw_and_enriched(st.session_state.students_df, "student")
     with dment:
-        rm, em = st.tabs([t("raw_data"), t("enriched_tags")])
-        rm.dataframe(st.session_state.mentors_df, use_container_width=True, height=360)
-        em.dataframe(enriched_df("mentor"), use_container_width=True, height=360)
+        _raw_and_enriched(st.session_state.mentors_df, "mentor")
 
 # ------------------------------ Q1 ----------------------------------------
 with tabs[1]:
