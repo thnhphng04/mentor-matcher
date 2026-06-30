@@ -298,8 +298,7 @@ with tabs[0]:
     up_m = uc2.file_uploader(t("mentors_csv"), type="csv", key="up_m")
     uc1.caption(t("required", cols=", ".join(STUDENT_COLUMNS)))
     uc2.caption(t("required", cols=", ".join(MENTOR_COLUMNS)))
-    b1, b2 = st.columns(2)
-    if b1.button(t("load_uploaded"), type="primary", disabled=not (up_s or up_m)):
+    if st.button(t("load_uploaded"), type="primary", disabled=not (up_s or up_m)):
         try:
             sdf = pd.read_csv(up_s) if up_s else st.session_state.students_df
             mdf = pd.read_csv(up_m) if up_m else st.session_state.mentors_df
@@ -311,24 +310,17 @@ with tabs[0]:
                 upload_and_enrich(sdf, mdf, up_s, up_m)
         except Exception as e:  # noqa: BLE001
             st.error(t("parse_error", err=e))
-    if b2.button(t("reset_default"), disabled=src == "default"):
-        load_default_dataset(persist=True)
-        st.rerun()
 
     # --- cache management ---
     st.subheader(t("enrich_cache"))
     sc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.srecs.values()))
     mc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.mrecs.values()))
     st.caption(t("backend_line", backend=store_mod.backend_name(), sc=sc, mc=mc))
-    e1, e2, e3 = st.columns(3)
-    if e1.button(t("save_tags")):
-        enrich_mod.save_cache(file_cfg, "student", st.session_state.srecs)
-        enrich_mod.save_cache(file_cfg, "mentor", st.session_state.mrecs)
-        st.success(t("saved"))
-    e2.download_button(t("dl_students_json"),
+    e1, e2 = st.columns(2)
+    e1.download_button(t("dl_students_json"),
                        json.dumps(st.session_state.srecs, ensure_ascii=False, indent=2),
                        "students_enriched.json", "application/json")
-    e3.download_button(t("dl_mentors_json"),
+    e2.download_button(t("dl_mentors_json"),
                        json.dumps(st.session_state.mrecs, ensure_ascii=False, indent=2),
                        "mentors_enriched.json", "application/json")
 

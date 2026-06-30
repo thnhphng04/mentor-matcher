@@ -359,22 +359,39 @@ The free-text fields are mixed Vietnamese/English. A one-time **OpenAI** pass (S
 
 Tags are cached (Supabase or local). The matching then runs **deterministically** on these tags — the LLM is a preparation step, not part of the live matching loop. Rows not yet enriched stay "unenriched" (empty tags) and score 0 until you enrich them.
 
-### Layer 3 · Algorithms inside the question tabs
-All four questions share two engines that decide *who matches whom* among feasible pairs:
-- **Greedy** — assigns one student at a time, best-available first. Fast; the explainable baseline.
-- **Optimal** — a min-cost max-flow that solves all assignments together: maximize how many are matched, then total score. The recommended default.
+### Layer 3 · Matching algorithms
 
-Each question builds on the previous one:
+**Feasible edges (the search space).** For each student–mentor pair we first check the **hard constraints**: the parent's requested mentor gender (when stated) must match, and at least one of the student's desired time slots must fall inside one of the mentor's availability windows with room for a `session_length`-minute session. Only feasible pairs become edges in the matching graph.
 
-| Question | Method |
+**Scoring a pair (Q2/Q3).** Every feasible edge gets a score in **[0, 1]** — a weighted average of four components computed from the tags:
+- **focus_overlap** — Jaccard overlap of student `desired_focus` ∩ mentor `offered_focus`.
+- **trait_match** — Jaccard overlap of student `desired_traits` ∩ mentor `personality_tags`.
+- **symptom_fit** — how well the mentor covers the focus areas a student's symptom needs (a symptom→focus map, e.g. *procrastination → time-management, accountability*).
+- **mentor_pref** — how well the student satisfies the mentor's `preferred_student.needs`.
+
+`score = Σ(componentᵢ × weightᵢ) / Σ weightᵢ`. The weights are the sliders in each tab — **Q2** sets focus/trait, **Q3** adds symptom/mentor-pref. **Q1** uses all-zero weights, so it scores purely on feasibility.
+
+**Capacity & booking.** A mentor's capacity is the number of **non-overlapping session blocks** that fit across its windows (a window of length L holds ⌊L / session_length⌋ blocks), capped by `max_students_per_mentor`. Each assigned student is booked into a concrete `(day, start)` block that doesn't overlap another student on that mentor.
+
+**Two engines (who matches whom).**
+- **Greedy (baseline).** Sort all feasible edges by score (highest first); walk the list and take a pair whenever the student is still free and the mentor still has capacity. Fast and fully explainable, but it can *strand* a student whose only mentor was already taken by an earlier, more-flexible student.
+- **Optimal (min-cost max-flow).** Build a flow network — `source → each student (cap 1) → each feasible mentor (cap 1, cost = −score) → sink (cap = mentor capacity)` — and run a **max-flow / min-cost** solve (`networkx.max_flow_min_cost`). It first **maximizes how many students are matched** (coverage), then among all maximum matchings **minimizes total cost = maximizes total score**. This avoids the greedy trap; it's the recommended default.
+
+**Repair pass.** After the engine picks pairs and they're booked, any student dropped by a time-block conflict or left over is re-tried on its **next-best feasible mentor** with free capacity — keeping coverage near-complete.
+
+**Per-question summary.**
+
+| Question | What it adds |
 |---|---|
-| **Q1 · Feasible** | Hard constraints only: **gender** (parent's requested mentor gender) + **time** (a student slot fits a mentor window) + **capacity** (non-overlapping session blocks, capped). Reports unassigned + reasons. |
-| **Q2 · Parent expectations** | Scores each feasible pair by overlap of the student's **desired focus/traits** with the mentor's offered focus/personality. Compared to a random baseline. |
-| **Q3 · Two-way fit** | Adds the student's **symptom needs** and the mentor's **preferred-student** profile → a two-sided score. Weak pairs go to a **review queue**. |
-| **Q4 · Rejection & re-match** | Simulate ~20% of students rejecting their mentor (seeded). Kept students are pinned; rejected ones are barred from their old mentor and re-matched. Reports quality before/after. |
+| **Q1 · Feasible** | Hard constraints only (gender + time + capacity). Reports unassigned + the binding reason. |
+| **Q2 · Parent expectations** | focus/trait scoring; reported as Δ vs a random feasible baseline. |
+| **Q3 · Two-way fit** | adds symptom-fit + mentor-preference → a two-sided score; pairs below the **poor-fit threshold** go to a review queue. |
+| **Q4 · Rejection & re-match** | see below. |
+
+**Q4 · rejection & re-match.** Run the Q3 optimal match, then each matched student independently **rejects** with probability `p` (default 0.20, seeded for reproducibility). Non-rejecting students are **pinned** to their mentor; each rejected student is **barred** from its old mentor; the rejected pool is re-matched against the remaining capacity with the same optimal engine. The app reports mean score and coverage **before vs after**.
 
 ### Manual overrides (human-in-the-loop)
-Force / block / skip let a person pin a known-good pairing, forbid a bad one, or remove someone — applied before the engine runs.
+Applied **before** the engine runs: **force** pre-books a pair and consumes that mentor's capacity; **block** removes that one edge; **skip** takes a person out of the pool entirely.
 """,
     "vi": """
 ## 📋 Cách hoạt động — các tầng
@@ -389,22 +406,39 @@ Các trường văn bản tự do trộn lẫn tiếng Việt/Anh. Một lượt
 
 Nhãn được lưu (Supabase hoặc cục bộ). Việc ghép cặp sau đó chạy **tất định** trên các nhãn này — LLM là bước chuẩn bị, không nằm trong vòng lặp ghép cặp. Dòng chưa làm giàu sẽ giữ trạng thái "chưa làm giàu" (nhãn rỗng) và điểm bằng 0 cho tới khi bạn làm giàu.
 
-### Tầng 3 · Thuật toán bên trong các tab câu hỏi
-Cả bốn câu hỏi dùng chung hai thuật toán quyết định *ai ghép với ai* trong các cặp khả thi:
-- **Greedy (tham lam)** — gán từng học sinh một, ưu tiên lựa chọn tốt nhất còn trống. Nhanh; là mốc cơ sở dễ giải thích.
-- **Optimal (tối ưu)** — luồng chi phí nhỏ nhất giải toàn bộ cùng lúc: tối đa số cặp được ghép, rồi tối đa tổng điểm. Là mặc định khuyến nghị.
+### Tầng 3 · Thuật toán ghép cặp
 
-Mỗi câu hỏi xây dựng trên câu trước:
+**Cạnh khả thi (không gian tìm kiếm).** Với mỗi cặp học sinh–mentor, trước tiên kiểm tra **ràng buộc cứng**: giới tính mentor mà phụ huynh yêu cầu (nếu có) phải khớp, và ít nhất một khe giờ mong muốn của học sinh phải nằm trong một khung rảnh của mentor, đủ chỗ cho buổi `session_length` phút. Chỉ cặp khả thi mới trở thành cạnh trong đồ thị ghép.
 
-| Câu hỏi | Phương pháp |
+**Chấm điểm một cặp (Q2/Q3).** Mỗi cạnh khả thi nhận điểm trong **[0, 1]** — trung bình có trọng số của bốn thành phần tính từ nhãn:
+- **focus_overlap** — độ trùng Jaccard giữa `desired_focus` của học sinh ∩ `offered_focus` của mentor.
+- **trait_match** — độ trùng Jaccard giữa `desired_traits` ∩ `personality_tags`.
+- **symptom_fit** — mức mentor đáp ứng lĩnh vực mà triệu chứng của học sinh cần (ánh xạ triệu chứng→lĩnh vực, ví dụ *trì hoãn → quản lý thời gian, tự kỷ luật*).
+- **mentor_pref** — mức học sinh thỏa `preferred_student.needs` của mentor.
+
+`score = Σ(thành_phầnᵢ × trọng_sốᵢ) / Σ trọng_sốᵢ`. Trọng số là các thanh trượt trong từng tab — **Q2** đặt focus/trait, **Q3** thêm symptom/mentor-pref. **Q1** dùng trọng số bằng 0 nên chỉ xét tính khả thi.
+
+**Sức chứa & đặt lịch.** Sức chứa của mentor là số **khối buổi không trùng nhau** vừa với các khung (khung dài L chứa ⌊L / session_length⌋ khối), giới hạn bởi `max_students_per_mentor`. Mỗi học sinh được đặt vào một khối `(ngày, giờ bắt đầu)` cụ thể không trùng học sinh khác của mentor đó.
+
+**Hai thuật toán (ai ghép với ai).**
+- **Greedy (tham lam — mốc cơ sở).** Sắp xếp tất cả cạnh khả thi theo điểm (cao trước); duyệt và lấy một cặp khi học sinh còn trống và mentor còn chỗ. Nhanh và dễ giải thích, nhưng có thể *bỏ rơi* một học sinh mà mentor duy nhất của em đã bị một học sinh linh hoạt hơn lấy trước.
+- **Optimal (luồng chi phí nhỏ nhất).** Dựng mạng luồng — `nguồn → mỗi học sinh (sức chứa 1) → mỗi mentor khả thi (sức chứa 1, chi phí = −điểm) → đích (sức chứa = sức chứa mentor)` — rồi giải **luồng cực đại / chi phí nhỏ nhất** (`networkx.max_flow_min_cost`). Trước hết **tối đa số học sinh được ghép** (độ phủ), rồi trong các phương án phủ tối đa **tối thiểu tổng chi phí = tối đa tổng điểm**. Tránh được bẫy của greedy; là mặc định khuyến nghị.
+
+**Bước sửa chữa.** Sau khi thuật toán chọn cặp và đặt lịch, học sinh bị loại do trùng khối giờ hoặc còn dư sẽ được thử lại với **mentor khả thi tốt kế tiếp** còn chỗ — giữ độ phủ gần như trọn vẹn.
+
+**Tóm tắt theo câu hỏi.**
+
+| Câu hỏi | Bổ sung |
 |---|---|
-| **Q1 · Khả thi** | Chỉ ràng buộc cứng: **giới tính** (giới tính mentor phụ huynh yêu cầu) + **thời gian** (khe giờ học sinh nằm trong khung của mentor) + **sức chứa** (các khối buổi không trùng nhau, có giới hạn). Báo cáo ai chưa ghép + lý do. |
-| **Q2 · Kỳ vọng phụ huynh** | Chấm điểm từng cặp khả thi theo mức trùng giữa **lĩnh vực/tính cách mong muốn** của học sinh với lĩnh vực/tính cách của mentor. So với mốc ngẫu nhiên. |
-| **Q3 · Phù hợp hai chiều** | Thêm **nhu cầu theo triệu chứng** của học sinh và hồ sơ **học sinh mong muốn** của mentor → điểm hai chiều. Cặp kém phù hợp vào **hàng chờ duyệt**. |
-| **Q4 · Từ chối & ghép lại** | Mô phỏng ~20% học sinh từ chối mentor (có hạt giống). Học sinh giữ lại được ghim; em bị từ chối bị cấm mentor cũ và được ghép lại. Báo cáo chất lượng trước/sau. |
+| **Q1 · Khả thi** | Chỉ ràng buộc cứng (giới tính + thời gian + sức chứa). Báo cáo chưa ghép + lý do ràng buộc. |
+| **Q2 · Kỳ vọng phụ huynh** | Chấm điểm focus/trait; báo cáo Δ so với mốc ngẫu nhiên khả thi. |
+| **Q3 · Phù hợp hai chiều** | Thêm symptom-fit + mentor-preference → điểm hai chiều; cặp dưới **ngưỡng kém phù hợp** vào hàng chờ duyệt. |
+| **Q4 · Từ chối & ghép lại** | xem bên dưới. |
+
+**Q4 · từ chối & ghép lại.** Chạy ghép tối ưu Q3, rồi mỗi học sinh đã ghép **từ chối** độc lập với xác suất `p` (mặc định 0.20, có hạt giống để tái lập). Học sinh không từ chối được **ghim** với mentor; mỗi học sinh từ chối bị **cấm** mentor cũ; nhóm bị từ chối được ghép lại với phần sức chứa còn lại bằng cùng thuật toán tối ưu. Ứng dụng báo cáo điểm trung bình và độ phủ **trước và sau**.
 
 ### Ghi đè thủ công (con người trong vòng lặp)
-Bắt buộc / cấm / bỏ qua cho phép con người ghim một cặp tốt đã biết, cấm một cặp xấu, hoặc loại một người — áp dụng trước khi thuật toán chạy.
+Áp dụng **trước** khi thuật toán chạy: **bắt buộc** đặt trước một cặp và chiếm sức chứa của mentor đó; **cấm** loại bỏ đúng cạnh đó; **bỏ qua** loại một người khỏi danh sách hoàn toàn.
 """,
 }
 
