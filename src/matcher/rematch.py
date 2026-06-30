@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass
-from typing import List, Set, Tuple
+from typing import Callable, List, Optional, Set, Tuple
 
 from .config import Config, Overrides, Pair
 from .data_io import Mentor, Student
@@ -24,8 +24,20 @@ class RematchResult:
 
 
 def simulate_and_rematch(students: List[Student], mentors: List[Mentor],
-                         srecs, mrecs, cfg: Config, overrides: Overrides) -> RematchResult:
-    initial = run_matching(students, mentors, srecs, mrecs, cfg, overrides, engine="optimal")
+                         srecs, mrecs, cfg: Config, overrides: Overrides,
+                         progress_cb: Optional[Callable[[str, float], None]] = None) -> RematchResult:
+    """``progress_cb(stage, frac)`` spans both matching passes: the initial Q3
+    match fills [0, 0.6] (stages prefixed ``initial:``), the re-match of the
+    rejected pool fills [0.6, 1.0] (prefixed ``final:``)."""
+    def _scaled(lo: float, hi: float, prefix: str):
+        if not progress_cb:
+            return None
+        def cb(stage: str, frac: float) -> None:
+            progress_cb(f"{prefix}:{stage}", lo + frac * (hi - lo))
+        return cb
+
+    initial = run_matching(students, mentors, srecs, mrecs, cfg, overrides, engine="optimal",
+                           progress_cb=_scaled(0.0, 0.6, "initial"))
 
     rng = random.Random(cfg.random_seed)
     matched = [a for a in initial.assignments if a["reason"] == "matched"]
@@ -42,5 +54,6 @@ def simulate_and_rematch(students: List[Student], mentors: List[Mentor],
         Pair(student_id=a["student_id"], mentor_id=a["mentor_id"]) for a in kept]
 
     final = run_matching(students, mentors, srecs, mrecs, cfg, new_overrides,
-                         engine="optimal", blocked_extra=rejected_pairs)
+                         engine="optimal", blocked_extra=rejected_pairs,
+                         progress_cb=_scaled(0.6, 1.0, "final"))
     return RematchResult(initial=initial, final=final, rejected_ids=rejected_ids)
