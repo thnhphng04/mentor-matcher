@@ -60,6 +60,19 @@ def remote_save(kind: str, data: Dict[str, dict]) -> bool:
     return True
 
 
+def remote_clear(kind: str) -> bool:
+    """Delete all enrichment tags for ``kind`` in Supabase (used to replace tags
+    when new data is uploaded). Returns False if Supabase isn't in use."""
+    sb = _client()
+    if sb is None:
+        return False
+    try:
+        sb.table(TABLE).delete().eq("kind", kind).execute()
+        return True
+    except Exception:
+        return False
+
+
 def backend_name() -> str:
     return "Supabase" if configured() else "local disk"
 

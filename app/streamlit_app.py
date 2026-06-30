@@ -161,6 +161,69 @@ def show_metrics(res, cfg, baseline=None):
     c[4].metric(t("review_size"), s["review_queue_size"])
 
 
+def enriched_df(kind):
+    """Flatten the enrichment tag records into a readable DataFrame."""
+    if kind == "student":
+        names = {s.id: s.name for s in st.session_state.students}
+        return pd.DataFrame([{
+            "id": sid, "name": names.get(sid, ""),
+            "requested_mentor_gender": r.get("requested_mentor_gender"),
+            "desired_focus": ", ".join(r.get("desired_focus", [])),
+            "desired_traits": ", ".join(r.get("desired_traits", [])),
+            "symptom_category": r.get("symptom_category"),
+            "source": r.get("source"),
+        } for sid, r in st.session_state.srecs.items()])
+    names = {m.id: m.name for m in st.session_state.mentors}
+    rows = []
+    for mid, r in st.session_state.mrecs.items():
+        ps = r.get("preferred_student") or {}
+        rows.append({
+            "id": mid, "name": names.get(mid, ""),
+            "personality_tags": ", ".join(r.get("personality_tags", [])),
+            "offered_focus": ", ".join(r.get("offered_focus", [])),
+            "pref_grade_band": ps.get("grade_band"),
+            "pref_needs": ", ".join(ps.get("needs", [])),
+            "source": r.get("source"),
+        })
+    return pd.DataFrame(rows)
+
+
+def upload_and_enrich(sdf, mdf, up_s, up_m):
+    """Replace the dataset (Supabase) and auto-enrich ALL rows of the uploaded
+    kind(s); if no API key, load the data unenriched and warn."""
+    saved = False
+    if up_s:
+        saved = store_mod.dataset_replace("student", _records(sdf)) or saved
+    if up_m:
+        saved = store_mod.dataset_replace("mentor", _records(mdf)) or saved
+    set_dataset(students_from_df(sdf), mentors_from_df(mdf), sdf, mdf,
+                "supabase" if saved else "uploaded")
+
+    key = integrated_key()
+    if not key:
+        st.warning(t("upload_no_key_warn"))
+        st.rerun()
+        return
+    model = file_cfg.enrichment.resolve_model()
+    for kind, flag in (("student", up_s), ("mentor", up_m)):
+        if not flag:
+            continue
+        items = st.session_state.students if kind == "student" else st.session_state.mentors
+        kl = t(f"kind_{kind}")
+        bar = st.progress(0.0, text=t("auto_enriching", kind=kl, d=0, n=len(items)))
+        recs = enrich_mod.enrich_sync(
+            items, kind, model, key, file_cfg.enrichment.max_workers,
+            file_cfg.enrichment.max_retries,
+            progress_cb=lambda d, n, kl=kl: bar.progress(d / n, text=t("auto_enriching", kind=kl, d=d, n=n)))
+        full = st.session_state.srecs if kind == "student" else st.session_state.mrecs
+        full.update(recs)
+        store_mod.remote_clear(kind)            # replace old tags in Supabase
+        enrich_mod.save_cache(file_cfg, kind, full)
+        bar.empty()
+    st.success(t("auto_enriched_done", backend=store_mod.backend_name()))
+    st.rerun()
+
+
 # ============================= SIDEBAR: language + page ===================
 sb = st.sidebar
 _cur_lang = st.session_state.get("lang", "en")
@@ -215,10 +278,9 @@ sb.multiselect(t("skip_students"), options=list(_student_label),
 sb.multiselect(t("skip_mentors"), options=list(_mentor_label),
                format_func=lambda i: _mentor_label[i], key="skip_m")
 
-tabs = st.tabs([t("tab_data"), t("tab_enrichment"),
-                t("tab_q1"), t("tab_q2"), t("tab_q3"), t("tab_q4")])
+tabs = st.tabs([t("tab_data"), t("tab_q1"), t("tab_q2"), t("tab_q3"), t("tab_q4")])
 
-# ------------------------------ DATA TAB ----------------------------------
+# ------------------- DATA & ENRICHMENT TAB (merged) -----------------------
 with tabs[0]:
     src = st.session_state.data_source
     c1, c2, c3 = st.columns(3)
@@ -226,6 +288,7 @@ with tabs[0]:
     c2.metric(t("m_mentors"), len(st.session_state.mentors))
     c3.metric(t("m_active"), src)
 
+    # --- upload (auto-enrich all) / reset ---
     st.subheader(t("upload_reset"))
     st.caption(t("upload_help"))
     uc1, uc2 = st.columns(2)
@@ -243,51 +306,18 @@ with tabs[0]:
             if miss:
                 st.error(t("missing_cols", cols="; ".join(miss)))
             else:
-                saved = False
-                if up_s:
-                    saved = store_mod.dataset_replace("student", _records(sdf)) or saved
-                if up_m:
-                    saved = store_mod.dataset_replace("mentor", _records(mdf)) or saved
-                set_dataset(students_from_df(sdf), mentors_from_df(mdf), sdf, mdf,
-                            "supabase" if saved else "uploaded")
-                st.success(t("loaded_where", ns=len(sdf), nm=len(mdf),
-                             where=t("where_supabase") if saved else t("where_session")))
-                st.rerun()
+                upload_and_enrich(sdf, mdf, up_s, up_m)
         except Exception as e:  # noqa: BLE001
             st.error(t("parse_error", err=e))
     if b2.button(t("reset_default"), disabled=src == "default"):
         load_default_dataset(persist=True)
         st.rerun()
 
-    st.subheader(t("enrich_cache"))
-    sc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.srecs.values()))
-    mc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.mrecs.values()))
-    st.caption(t("backend_line", backend=store_mod.backend_name(), sc=sc, mc=mc))
-    e1, e2, e3 = st.columns(3)
-    if e1.button(t("save_tags")):
-        enrich_mod.save_cache(file_cfg, "student", st.session_state.srecs)
-        enrich_mod.save_cache(file_cfg, "mentor", st.session_state.mrecs)
-        st.success(t("saved"))
-    e2.download_button(t("dl_students_json"),
-                       json.dumps(st.session_state.srecs, ensure_ascii=False, indent=2),
-                       "students_enriched.json", "application/json")
-    e3.download_button(t("dl_mentors_json"),
-                       json.dumps(st.session_state.mrecs, ensure_ascii=False, indent=2),
-                       "mentors_enriched.json", "application/json")
-
-    st.subheader(t("current_data"))
-    dt1, dt2 = st.tabs([t("students_n", n=len(st.session_state.students)),
-                        t("mentors_n", n=len(st.session_state.mentors))])
-    dt1.dataframe(st.session_state.students_df, use_container_width=True, height=360)
-    dt2.dataframe(st.session_state.mentors_df, use_container_width=True, height=360)
-
-# ------------------------------ ENRICHMENT TAB ----------------------------
-with tabs[1]:
+    # --- manual enrichment (default dataset / re-enrich) ---
     st.subheader(t("enrich_title"))
     st.caption(t("enrich_help"))
     key = integrated_key()
     (st.success if key else st.warning)(t("key_loaded") if key else t("key_missing"))
-    st.caption(t("backend_persist", backend=store_mod.backend_name()))
     c1, c2, c3 = st.columns([2, 1, 1])
     model = c1.text_input(t("model"), value=file_cfg.enrichment.resolve_model())
     kind = c2.selectbox(t("target"), ["student", "mentor"])
@@ -311,12 +341,39 @@ with tabs[1]:
         if n_failed:
             msg += t("enriched_failed", n=n_failed)
         st.success(msg + t("rerun_q23"))
+
+    # --- cache management ---
+    st.subheader(t("enrich_cache"))
     sc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.srecs.values()))
     mc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.mrecs.values()))
-    st.caption(t("tags_by_source", sc=sc, mc=mc))
+    st.caption(t("backend_line", backend=store_mod.backend_name(), sc=sc, mc=mc))
+    e1, e2, e3 = st.columns(3)
+    if e1.button(t("save_tags")):
+        enrich_mod.save_cache(file_cfg, "student", st.session_state.srecs)
+        enrich_mod.save_cache(file_cfg, "mentor", st.session_state.mrecs)
+        st.success(t("saved"))
+    e2.download_button(t("dl_students_json"),
+                       json.dumps(st.session_state.srecs, ensure_ascii=False, indent=2),
+                       "students_enriched.json", "application/json")
+    e3.download_button(t("dl_mentors_json"),
+                       json.dumps(st.session_state.mrecs, ensure_ascii=False, indent=2),
+                       "mentors_enriched.json", "application/json")
+
+    # --- data display: Students/Mentors → Raw / Enriched ---
+    st.subheader(t("current_data"))
+    dstud, dment = st.tabs([t("students_n", n=len(st.session_state.students)),
+                            t("mentors_n", n=len(st.session_state.mentors))])
+    with dstud:
+        rs, es = st.tabs([t("raw_data"), t("enriched_tags")])
+        rs.dataframe(st.session_state.students_df, use_container_width=True, height=360)
+        es.dataframe(enriched_df("student"), use_container_width=True, height=360)
+    with dment:
+        rm, em = st.tabs([t("raw_data"), t("enriched_tags")])
+        rm.dataframe(st.session_state.mentors_df, use_container_width=True, height=360)
+        em.dataframe(enriched_df("mentor"), use_container_width=True, height=360)
 
 # ------------------------------ Q1 ----------------------------------------
-with tabs[2]:
+with tabs[1]:
     st.subheader(t("q1_title"))
     st.caption(t("q1_caption"))
     c1, c2 = st.columns(2)
@@ -340,7 +397,7 @@ with tabs[2]:
         st.info(t("q1_info"))
 
 # ------------------------------ Q2 ----------------------------------------
-with tabs[3]:
+with tabs[2]:
     st.subheader(t("q2_title"))
     st.caption(t("q2_caption"))
     c1, c2 = st.columns(2)
@@ -358,7 +415,7 @@ with tabs[3]:
         st.info(t("q2_info"))
 
 # ------------------------------ Q3 ----------------------------------------
-with tabs[4]:
+with tabs[3]:
     st.subheader(t("q3_title"))
     st.caption(t("q3_caption"))
     c1, c2 = st.columns(2)
@@ -383,7 +440,7 @@ with tabs[4]:
         st.info(t("q3_info"))
 
 # ------------------------------ Q4 ----------------------------------------
-with tabs[5]:
+with tabs[4]:
     st.subheader(t("q4_title"))
     st.caption(t("q4_caption"))
     c1, c2 = st.columns(2)

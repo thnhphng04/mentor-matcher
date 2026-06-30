@@ -47,7 +47,7 @@ streamlit run app/streamlit_app.py     # interactive UI
 
 The sidebar has a **🌐 language toggle (English / Tiếng Việt)** that translates the whole UI, and a **page selector**: **Matcher · 📖 Instruction · 📋 Description** (the Instruction page is a how-to; the Description page explains the layers — data upload, enrichment, and the per-question algorithms).
 
-The **Matcher** page has a tab per stage: **📁 Data · 🤖 Enrichment · Q1 · Q2 · Q3 · Q4**. Each question is self-contained — its own controls plus a **▶ Run** button that executes *that question's* method (nothing auto-recomputes):
+The **Matcher** page has tabs: **📁 Data & Enrichment · Q1 · Q2 · Q3 · Q4**. The first tab combines data + enrichment: view raw data and enriched tags (Raw / Enriched sub-tabs per kind), upload/reset the dataset, and run enrichment. **Uploading new data auto-enriches all rows** and replaces the dataset + tags in the store. Each question is self-contained — its own controls plus a **▶ Run** button that executes *that question's* method (nothing auto-recomputes):
 
 - **Q1** — hard constraints (session length, capacity, gender, engine) → feasible matching + unassigned reasons.
 - **Q2** — focus + trait weights → parent-expectation scoring, shown vs the random baseline.

@@ -33,8 +33,14 @@ STRINGS = {
         "kind_student": "student",
         "kind_mentor": "mentor",
         # --- tabs ---
-        "tab_data": "📁 Data",
+        "tab_data": "📁 Data & Enrichment",
         "tab_enrichment": "🤖 Enrichment",
+        "raw_data": "Raw data",
+        "enriched_tags": "Enriched tags",
+        "auto_enriching": "Enriching {kind}… {d}/{n}",
+        "auto_enriched_done": "Uploaded & auto-enriched — saved to {backend}.",
+        "upload_no_key_warn": "Data uploaded but not enriched (no OPENAI_API_KEY). "
+                              "Set the key and run enrichment.",
         "tab_q1": "1️⃣ Q1 · Feasible",
         "tab_q2": "2️⃣ Q2 · Parent expectations",
         "tab_q3": "3️⃣ Q3 · Two-way fit",
@@ -161,8 +167,14 @@ STRINGS = {
         "kind_student": "học sinh",
         "kind_mentor": "mentor",
         # --- tabs ---
-        "tab_data": "📁 Dữ liệu",
+        "tab_data": "📁 Dữ liệu & Làm giàu",
         "tab_enrichment": "🤖 Làm giàu (LLM)",
+        "raw_data": "Dữ liệu gốc",
+        "enriched_tags": "Nhãn đã làm giàu",
+        "auto_enriching": "Đang làm giàu {kind}… {d}/{n}",
+        "auto_enriched_done": "Đã tải lên & tự động làm giàu — lưu vào {backend}.",
+        "upload_no_key_warn": "Đã tải dữ liệu nhưng chưa làm giàu (thiếu OPENAI_API_KEY). "
+                              "Hãy đặt khóa và chạy làm giàu.",
         "tab_q1": "1️⃣ Q1 · Khả thi",
         "tab_q2": "2️⃣ Q2 · Kỳ vọng phụ huynh",
         "tab_q3": "3️⃣ Q3 · Phù hợp hai chiều",
