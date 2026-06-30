@@ -1,0 +1,18 @@
+name: Keep-alive
+
+# Render's free tier spins the service down after 15 min of inactivity, and the
+# next request then pays a ~30-60s cold-start penalty. Ping the health endpoint
+# every 10 minutes so the deployed app stays warm for reviewers.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          curl -fsS --max-time 90 https://teencare-mentor-matcher.onrender.com/_stcore/health \
+            && echo "OK" || echo "Ping failed (app may be cold-starting or asleep)"
