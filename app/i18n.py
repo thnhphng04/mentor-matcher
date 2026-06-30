@@ -40,7 +40,9 @@ STRINGS = {
         "auto_enriching": "Enriching {kind}… {d}/{n}",
         "auto_enriched_done": "Uploaded & auto-enriched — saved to {backend}.",
         "upload_no_key_warn": "Data uploaded but not enriched (no OPENAI_API_KEY). "
-                              "Set the key and run enrichment.",
+                              "Set the key and re-upload.",
+        "auto_enrich_on": "✓ New uploads are auto-enriched and saved to {backend}.",
+        "auto_enrich_off": "⚠️ No OPENAI_API_KEY — uploads will load unenriched (Q2/Q3 score 0).",
         "tab_q1": "1️⃣ Q1 · Feasible",
         "tab_q2": "2️⃣ Q2 · Parent expectations",
         "tab_q3": "3️⃣ Q3 · Two-way fit",
@@ -174,7 +176,9 @@ STRINGS = {
         "auto_enriching": "Đang làm giàu {kind}… {d}/{n}",
         "auto_enriched_done": "Đã tải lên & tự động làm giàu — lưu vào {backend}.",
         "upload_no_key_warn": "Đã tải dữ liệu nhưng chưa làm giàu (thiếu OPENAI_API_KEY). "
-                              "Hãy đặt khóa và chạy làm giàu.",
+                              "Hãy đặt khóa và tải lại.",
+        "auto_enrich_on": "✓ Dữ liệu tải lên sẽ được tự động làm giàu và lưu vào {backend}.",
+        "auto_enrich_off": "⚠️ Thiếu OPENAI_API_KEY — dữ liệu tải lên chưa được làm giàu (Q2/Q3 = 0 điểm).",
         "tab_q1": "1️⃣ Q1 · Khả thi",
         "tab_q2": "2️⃣ Q2 · Kỳ vọng phụ huynh",
         "tab_q3": "3️⃣ Q3 · Phù hợp hai chiều",

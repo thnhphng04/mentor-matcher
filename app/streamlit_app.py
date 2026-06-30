@@ -291,6 +291,8 @@ with tabs[0]:
     # --- upload (auto-enrich all) / reset ---
     st.subheader(t("upload_reset"))
     st.caption(t("upload_help"))
+    _key = integrated_key()
+    st.caption(t("auto_enrich_on", backend=store_mod.backend_name()) if _key else t("auto_enrich_off"))
     uc1, uc2 = st.columns(2)
     up_s = uc1.file_uploader(t("students_csv"), type="csv", key="up_s")
     up_m = uc2.file_uploader(t("mentors_csv"), type="csv", key="up_m")
@@ -312,35 +314,6 @@ with tabs[0]:
     if b2.button(t("reset_default"), disabled=src == "default"):
         load_default_dataset(persist=True)
         st.rerun()
-
-    # --- manual enrichment (default dataset / re-enrich) ---
-    st.subheader(t("enrich_title"))
-    st.caption(t("enrich_help"))
-    key = integrated_key()
-    (st.success if key else st.warning)(t("key_loaded") if key else t("key_missing"))
-    c1, c2, c3 = st.columns([2, 1, 1])
-    model = c1.text_input(t("model"), value=file_cfg.enrichment.resolve_model())
-    kind = c2.selectbox(t("target"), ["student", "mentor"])
-    pool = st.session_state.students if kind == "student" else st.session_state.mentors
-    kind_label = t(f"kind_{kind}")
-    sample = c3.number_input(t("sample_rows"), 1, len(pool), min(25, len(pool)), 25)
-    all_rows = st.checkbox(t("enrich_all", n=len(pool), kind=kind_label))
-    if st.button(t("run_enrichment"), type="primary", disabled=not key):
-        items = pool if all_rows else pool[: int(sample)]
-        bar = st.progress(0.0, text=t("calling_openai"))
-        recs = enrich_mod.enrich_sync(
-            items, kind, model, key, file_cfg.enrichment.max_workers,
-            file_cfg.enrichment.max_retries,
-            progress_cb=lambda d, n: bar.progress(d / n, text=t("enriched_progress", d=d, t=n)))
-        full = st.session_state.srecs if kind == "student" else st.session_state.mrecs
-        full.update(recs)
-        enrich_mod.save_cache(file_cfg, kind, full)
-        bar.empty()
-        n_failed = sum(1 for r in recs.values() if r.get("llm_failed"))
-        msg = t("enriched_done", n=len(recs), kind=kind_label, backend=store_mod.backend_name())
-        if n_failed:
-            msg += t("enriched_failed", n=n_failed)
-        st.success(msg + t("rerun_q23"))
 
     # --- cache management ---
     st.subheader(t("enrich_cache"))
