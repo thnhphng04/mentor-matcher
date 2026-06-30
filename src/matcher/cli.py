@@ -127,6 +127,12 @@ def _assert_valid(result, students, mentors, srecs, cfg):
 
 
 def main(argv=None):
+    try:  # load a local .env (OPENAI_API_KEY / SUPABASE_*) if present
+        from dotenv import load_dotenv
+        load_dotenv(ROOT / ".env")
+    except Exception:
+        pass
+
     p = argparse.ArgumentParser(prog="matcher")
     sub = p.add_subparsers(dest="cmd", required=True)
 

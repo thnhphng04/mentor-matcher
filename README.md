@@ -39,9 +39,22 @@ Enrichment is **LLM-only** (OpenAI). The semantic tags come solely from the LLM 
 
 ```bash
 pip install -e .                       # or: pip install -r requirements.txt
-python -m matcher.cli run              # match on the committed cache → outputs/
+python -m matcher.cli run              # match via CLI → outputs/
 streamlit run app/streamlit_app.py     # interactive UI
 ```
+
+### Using the app
+
+The sidebar has a **🌐 language toggle (English / Tiếng Việt)** that translates the whole UI, and a **page selector**: **Matcher · 📖 Instruction · 📋 Description** (the Instruction page is a how-to; the Description page explains the layers — data upload, enrichment, and the per-question algorithms).
+
+The **Matcher** page has tabs: **📁 Data & Enrichment · Q1 · Q2 · Q3 · Q4**. The first tab combines data + enrichment: view raw data and enriched tags (Raw / Enriched sub-tabs per kind), upload/reset the dataset, and run enrichment. **Uploading new data auto-enriches all rows** and replaces the dataset + tags in the store. Each question is self-contained — its own controls plus a **▶ Run** button that executes *that question's* method (nothing auto-recomputes):
+
+- **Q1** — hard constraints (session length, capacity, gender, engine) → feasible matching + unassigned reasons.
+- **Q2** — focus + trait weights → parent-expectation scoring, shown vs the random baseline.
+- **Q3** — symptom + mentor-preference weights (building on Q2) → two-way fit + poor-fit review queue.
+- **Q4** — rejection probability + seed → simulate rejection on the Q3 match and re-match.
+
+Run **🤖 Enrichment** first so Q2/Q3 have LLM tags (Q1 doesn't need it). Manual overrides (force/block/skip) are in the sidebar and apply on the next Run.
 
 `python -m matcher.cli run` prints a metrics summary and writes `outputs/run_assignments.csv`, `run_unassigned.csv`, `run_review_queue.csv`. Other commands:
 
@@ -63,8 +76,8 @@ Representative results **after enrichment** (default config). Before enrichment,
 
 ## Tuning & overrides (no code edits)
 
-- **`config.yaml`** — `session_length_minutes`, `max_students_per_mentor`, `enforce_gender`, scoring `weights`, `thresholds`, `rejection_probability`, `random_seed`, `engine`. (The Streamlit sidebar exposes all of these live.)
-- **`overrides.yaml`** — `force` a pair, `block` a pair, `skip_students` / `skip_mentors`. The UI has equivalent text boxes. Re-run to recompute.
+- **`config.yaml`** — `session_length_minutes`, `max_students_per_mentor`, `enforce_gender`, scoring `weights`, `thresholds`, `rejection_probability`, `random_seed`, `engine`. (The app exposes the relevant ones in each question tab.)
+- **`overrides.yaml`** (CLI) / **sidebar** (app) — `force` a pair, `block` a pair, `skip_students` / `skip_mentors`. In the app, the sidebar has an **"Add pair"** picker that searches students/mentors **by name** (no UUIDs to type). Overrides apply on the next Run.
 
 ## LLM enrichment (OpenAI) — LLM-only
 
@@ -78,8 +91,10 @@ The API key is auto-loaded from `OPENAI_API_KEY` (env on Render, or `.streamlit/
 ### Persistence — Supabase (free) or local disk
 
 Tags are stored via a pluggable backend (`src/matcher/store.py`):
-- **Supabase** (Postgres) when `SUPABASE_URL` + `SUPABASE_KEY` are set → in-app enrichment **persists across redeploys**. One-time setup: run [`supabase_schema.sql`](supabase_schema.sql) in the Supabase SQL editor, then set the two env vars (Render dashboard, or local `secrets.toml`). The app uses the **service-role key** server-side.
+- **Supabase** (Postgres) when `SUPABASE_URL` + `SUPABASE_KEY` are set → enrichment tags **and the raw dataset** persist across redeploys. One-time setup: run [`supabase_schema.sql`](supabase_schema.sql) in the Supabase SQL editor (creates `enrichment_tags` + `dataset_rows`), then set the two env vars. The app uses the **service-role key** server-side.
 - **Local JSON** (`data/cache/*.json`) otherwise — fine for local dev, ephemeral on Render.
+
+Uploading new CSVs in the Data tab **replaces the dataset in Supabase**; the app loads from Supabase on start (falling back to the bundled CSVs). Reset clears it.
 
 The Data tab shows the active **backend**, a per-source breakdown (`llm` vs `unenriched`), and **Save** + **Download JSON** controls.
 

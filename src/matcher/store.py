@@ -13,6 +13,7 @@ import os
 from typing import Dict, Optional
 
 TABLE = "enrichment_tags"
+DATASET_TABLE = "dataset_rows"
 _PAGE = 1000  # PostgREST default max rows per request
 
 
@@ -59,5 +60,58 @@ def remote_save(kind: str, data: Dict[str, dict]) -> bool:
     return True
 
 
+def remote_clear(kind: str) -> bool:
+    """Delete all enrichment tags for ``kind`` in Supabase (used to replace tags
+    when new data is uploaded). Returns False if Supabase isn't in use."""
+    sb = _client()
+    if sb is None:
+        return False
+    try:
+        sb.table(TABLE).delete().eq("kind", kind).execute()
+        return True
+    except Exception:
+        return False
+
+
 def backend_name() -> str:
     return "Supabase" if configured() else "local disk"
+
+
+# --------------------------------------------------------------------------
+# Raw dataset rows (the original CSV data) — so uploads persist in Supabase.
+# --------------------------------------------------------------------------
+def dataset_load(kind: str) -> Optional[list]:
+    """Return the raw rows (list of dicts) for ``kind`` from Supabase, or None
+    if Supabase isn't in use / the table is empty / unavailable."""
+    sb = _client()
+    if sb is None:
+        return None
+    try:
+        out = []
+        start = 0
+        while True:
+            rows = (sb.table(DATASET_TABLE).select("data").eq("kind", kind)
+                    .range(start, start + _PAGE - 1).execute()).data or []
+            out.extend(r["data"] for r in rows)
+            if len(rows) < _PAGE:
+                break
+            start += _PAGE
+        return out or None
+    except Exception:
+        return None
+
+
+def dataset_replace(kind: str, rows: list) -> bool:
+    """Replace all ``kind`` rows in Supabase with ``rows`` (each a dict with an
+    'ID' key). Empty ``rows`` just clears them. Returns False if not in use."""
+    sb = _client()
+    if sb is None:
+        return False
+    try:
+        sb.table(DATASET_TABLE).delete().eq("kind", kind).execute()
+        payload = [{"kind": kind, "id": str(r.get("ID")), "data": r} for r in rows]
+        for i in range(0, len(payload), 500):
+            sb.table(DATASET_TABLE).insert(payload[i:i + 500]).execute()
+        return True
+    except Exception:
+        return False
