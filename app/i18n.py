@@ -129,6 +129,9 @@ STRINGS = {
         "q3_pref_w": "Q3 · mentor-preference weight",
         "poor_fit": "Poor-fit threshold (review queue)",
         "q3_inherits": "Inherits Q2 weights — focus: {focus}, trait: {trait} (set in the Q2 tab).",
+        "q1_settings_caption": "Using Q1 settings — session length: {session}min, max capacity: {cap}.",
+        "q4_inherits": "Inherits Q2 weights (focus: {focus}, trait: {trait}) and Q3 weights "
+                       "(symptom: {symptom}, mentor_pref: {pref}) — set in their tabs.",
         "run_q3": "▶ Run Q3",
         "review_queue": "⚠️ Review queue (poor fits)",
         "q3_info": "Click **Run Q3**. (Run enrichment first for non-zero scores.)",
@@ -275,6 +278,9 @@ STRINGS = {
         "q3_pref_w": "Q3 · trọng số mong muốn của mentor",
         "poor_fit": "Ngưỡng kém phù hợp (hàng chờ duyệt)",
         "q3_inherits": "Kế thừa trọng số Q2 — lĩnh vực: {focus}, tính cách: {trait} (đặt ở tab Q2).",
+        "q1_settings_caption": "Dùng cài đặt của Q1 — thời lượng buổi: {session} phút, sức chứa tối đa: {cap}.",
+        "q4_inherits": "Kế thừa trọng số Q2 (lĩnh vực: {focus}, tính cách: {trait}) và Q3 "
+                       "(triệu chứng: {symptom}, mentor_pref: {pref}) — đặt ở các tab đó.",
         "run_q3": "▶ Chạy Q3",
         "review_queue": "⚠️ Hàng chờ duyệt (kém phù hợp)",
         "q3_info": "Bấm **Run Q3**. (Hãy làm giàu trước để có điểm khác 0.)",

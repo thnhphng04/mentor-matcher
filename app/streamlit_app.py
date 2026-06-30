@@ -95,6 +95,14 @@ def integrated_key() -> str | None:
 
 
 # --------------------------- shared config / overrides --------------------
+def _q1_settings_caption() -> str:
+    """Q1's session-length/capacity sliders are read by build_config() for every
+    question, not just Q1 — surface that inheritance in Q2/Q3/Q4."""
+    session = st.session_state.get("q1_session_len", file_cfg.session_length_minutes)
+    cap = st.session_state.get("q1_max_cap", file_cfg.max_students_per_mentor or 12)
+    return t("q1_settings_caption", session=session, cap=cap)
+
+
 def build_config(focus=0.0, trait=0.0, symptom=0.0, mentor_pref=0.0) -> Config:
     s = st.session_state
     return Config(
@@ -402,6 +410,7 @@ with tabs[1]:
 with tabs[2]:
     st.subheader(t("q2_title"))
     st.caption(t("q2_caption"))
+    st.caption(_q1_settings_caption())
     c1, c2 = st.columns(2)
     f = c1.slider(t("q2_focus_w"), 0.0, 2.0, file_cfg.weights.focus_overlap, 0.1, key="q2_focus")
     tr = c2.slider(t("q2_trait_w"), 0.0, 2.0, file_cfg.weights.trait_match, 0.1, key="q2_trait")
@@ -424,6 +433,7 @@ with tabs[2]:
 with tabs[3]:
     st.subheader(t("q3_title"))
     st.caption(t("q3_caption"))
+    st.caption(_q1_settings_caption())
     c1, c2 = st.columns(2)
     sym = c1.slider(t("q3_symptom_w"), 0.0, 2.0, file_cfg.weights.symptom_fit, 0.1, key="q3_symptom")
     mp = c2.slider(t("q3_pref_w"), 0.0, 2.0, file_cfg.weights.mentor_pref, 0.1, key="q3_pref")
@@ -453,14 +463,17 @@ with tabs[3]:
 with tabs[4]:
     st.subheader(t("q4_title"))
     st.caption(t("q4_caption"))
+    st.caption(_q1_settings_caption())
+    q4f = st.session_state.get("q2_focus", file_cfg.weights.focus_overlap)
+    q4t = st.session_state.get("q2_trait", file_cfg.weights.trait_match)
+    q4s = st.session_state.get("q3_symptom", file_cfg.weights.symptom_fit)
+    q4p = st.session_state.get("q3_pref", file_cfg.weights.mentor_pref)
+    st.caption(t("q4_inherits", focus=q4f, trait=q4t, symptom=q4s, pref=q4p))
     c1, c2 = st.columns(2)
     c1.slider(t("reject_prob"), 0.0, 0.5, file_cfg.rejection_probability, 0.05, key="q4_reject")
     c2.number_input(t("seed"), value=file_cfg.random_seed, step=1, key="q4_seed")
     if st.button(t("run_q4"), type="primary", key="run_q4"):
-        cfg = build_config(focus=st.session_state.get("q2_focus", file_cfg.weights.focus_overlap),
-                           trait=st.session_state.get("q2_trait", file_cfg.weights.trait_match),
-                           symptom=st.session_state.get("q3_symptom", file_cfg.weights.symptom_fit),
-                           mentor_pref=st.session_state.get("q3_pref", file_cfg.weights.mentor_pref))
+        cfg = build_config(focus=q4f, trait=q4t, symptom=q4s, mentor_pref=q4p)
         bar, cb = _progress_bar()
         rr = simulate_and_rematch(
             st.session_state.students, st.session_state.mentors,
