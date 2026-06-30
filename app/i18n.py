@@ -359,6 +359,13 @@ The free-text fields are mixed Vietnamese/English. A one-time **OpenAI** pass (S
 
 Tags are cached (Supabase or local). The matching then runs **deterministically** on these tags — the LLM is a preparation step, not part of the live matching loop. Rows not yet enriched stay "unenriched" (empty tags) and score 0 until you enrich them.
 
+**Closed tag vocabulary.** The LLM can't invent wording — OpenAI Structured Outputs constrains every tag field to one of these fixed enums, so the same concept always gets the same exact string on both sides (which is what makes the overlap scoring in Layer 3 meaningful):
+
+- **Focus areas** (`desired_focus` / `offered_focus` / mentor `preferred_student.needs`) — 12 tags: `emotional-support, time-management, study-habits, life-skills, accountability, motivation, exam-prep, confidence, communication, focus-attention, career-orientation, stress-management`.
+- **Personality traits** (`desired_traits` / `personality_tags`) — 10 tags: `friendly, patient, structured, motivating, empathetic, disciplined, encouraging, detail-oriented, calm, energetic`.
+- **Symptom categories** (`symptom_category`) — 10 tags: `anxiety, procrastination, low-motivation, distraction, low-confidence, social-difficulty, academic-pressure, emotional-difficulty, behavioral, none`.
+- **Requested mentor gender** (`requested_mentor_gender`) — `Male`, `Female`, or `null` (not stated).
+
 ### Layer 3 · Matching algorithms
 
 **Feasible edges (the search space).** For each student–mentor pair we first check the **hard constraints**: the parent's requested mentor gender (when stated) must match, and at least one of the student's desired time slots must fall inside one of the mentor's availability windows with room for a `session_length`-minute session. Only feasible pairs become edges in the matching graph.
@@ -405,6 +412,13 @@ Các trường văn bản tự do trộn lẫn tiếng Việt/Anh. Một lượt
 - **Mentor:** nhãn tính cách, lĩnh vực có thể hỗ trợ, hồ sơ học sinh mong muốn.
 
 Nhãn được lưu (Supabase hoặc cục bộ). Việc ghép cặp sau đó chạy **tất định** trên các nhãn này — LLM là bước chuẩn bị, không nằm trong vòng lặp ghép cặp. Dòng chưa làm giàu sẽ giữ trạng thái "chưa làm giàu" (nhãn rỗng) và điểm bằng 0 cho tới khi bạn làm giàu.
+
+**Bộ từ vựng nhãn cố định.** LLM không thể tự bịa từ ngữ — OpenAI Structured Outputs giới hạn mỗi trường nhãn vào một trong các enum cố định sau, nên cùng một khái niệm luôn ra đúng cùng một chuỗi ở cả hai phía (đây là điều khiến việc chấm điểm trùng lặp ở Tầng 3 có ý nghĩa):
+
+- **Lĩnh vực hỗ trợ** (`desired_focus` / `offered_focus` / `preferred_student.needs` của mentor) — 12 nhãn: `emotional-support, time-management, study-habits, life-skills, accountability, motivation, exam-prep, confidence, communication, focus-attention, career-orientation, stress-management`.
+- **Tính cách** (`desired_traits` / `personality_tags`) — 10 nhãn: `friendly, patient, structured, motivating, empathetic, disciplined, encouraging, detail-oriented, calm, energetic`.
+- **Nhóm triệu chứng** (`symptom_category`) — 10 nhãn: `anxiety, procrastination, low-motivation, distraction, low-confidence, social-difficulty, academic-pressure, emotional-difficulty, behavioral, none`.
+- **Giới tính mentor được yêu cầu** (`requested_mentor_gender`) — `Male`, `Female`, hoặc `null` (không nêu rõ).
 
 ### Tầng 3 · Thuật toán ghép cặp
 
