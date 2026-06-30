@@ -1,9 +1,9 @@
 """Streamlit UI for the mentor-student matcher.
 
-Tune rules/weights, manage the dataset (view / upload / reset), run the OpenAI
-enrichment live, and see assignments + quality metrics — recomputed on change.
-The OpenAI key is auto-loaded from the environment / Streamlit secrets, so there
-is nothing to paste on open. Runs offline from the committed cache without a key.
+Layout: Data · Enrichment · Q1 · Q2 · Q3 · Q4. Each question is self-contained —
+its own controls and a **Run** button that executes *that question's* method
+(no live auto-recompute). Q1 = hard constraints only; Q2 adds parent-expectation
+scoring; Q3 adds two-way fit; Q4 simulates rejection and re-matches on Q3.
 """
 from __future__ import annotations
 
@@ -28,17 +28,16 @@ import streamlit as st
 
 from matcher import enrich as enrich_mod
 from matcher import store as store_mod
-from matcher.config import (Config, Overrides, Pair, Thresholds, Weights, load_config)
-from matcher.data_io import (MENTOR_COLUMNS, STUDENT_COLUMNS, load_mentors, load_students,
-                             mentors_from_df, students_from_df, validate_columns, ROOT)
+from matcher.config import Config, Overrides, Pair, Thresholds, Weights, load_config
+from matcher.data_io import (MENTOR_COLUMNS, STUDENT_COLUMNS, mentors_from_df,
+                             students_from_df, validate_columns, ROOT)
 from matcher.matcher import run_matching
 from matcher.metrics import baseline_delta, summarize
 from matcher.rematch import simulate_and_rematch
 
 st.set_page_config(page_title="TeenCare Mentor Matcher", layout="wide")
 
-# Bridge Streamlit secrets -> env vars so the (non-Streamlit) store/enrich
-# modules, which read os.environ, see SUPABASE_* / OPENAI_* set via secrets.toml.
+# Bridge Streamlit secrets -> env so the non-Streamlit modules see them.
 for _k in ("OPENAI_API_KEY", "OPENAI_MODEL", "SUPABASE_URL", "SUPABASE_KEY"):
     try:
         if _k not in os.environ and _k in st.secrets:
@@ -47,14 +46,11 @@ for _k in ("OPENAI_API_KEY", "OPENAI_MODEL", "SUPABASE_URL", "SUPABASE_KEY"):
         pass
 
 file_cfg = load_config()
-
 DEFAULT_STUDENTS = ROOT / "data" / "students_prod_2000_enriched.csv"
 DEFAULT_MENTORS = ROOT / "data" / "mentors_prod_200_enriched.csv"
 
 
-# --------------------------------------------------------------------------
-# Dataset state — held in session so uploads/resets swap the active data.
-# --------------------------------------------------------------------------
+# --------------------------- dataset / enrichment state -------------------
 def _rebuild_enrichment():
     sr, mr = enrich_mod.get_enrichment(
         st.session_state.students, st.session_state.mentors, file_cfg)
@@ -80,59 +76,20 @@ if "students" not in st.session_state:
 
 
 def integrated_key() -> str | None:
-    """Resolve the OpenAI key from Streamlit secrets or environment — no UI."""
-    try:
-        if "OPENAI_API_KEY" in st.secrets:
-            return st.secrets["OPENAI_API_KEY"]
-    except Exception:
-        pass
     return os.environ.get("OPENAI_API_KEY")
 
 
 st.title("🎯 TeenCare Mentor–Student Matcher")
-st.caption("Rule-driven, tunable matching · constraints → scoring → assignment → metrics")
+st.caption("Rule-driven, tunable matching · each question (Q1–Q4) runs its own method on **Run**")
 
-# ----------------------------- sidebar: config ----------------------------
+# ----------------------------- sidebar: overrides -------------------------
 sb = st.sidebar
-sb.header("⚙️ Rules & weights")
-session_len = sb.slider("Session length (min)", 15, 120, file_cfg.session_length_minutes, 15)
-max_cap = sb.slider("Max students per mentor", 1, 30, file_cfg.max_students_per_mentor or 12)
-enforce_gender = sb.checkbox("Enforce requested gender (hard)", file_cfg.enforce_gender)
-engine = sb.selectbox("Engine", ["optimal", "greedy"],
-                      index=0 if file_cfg.engine == "optimal" else 1)
-
-sb.subheader("Scoring weights")
-w = file_cfg.weights
-w_focus = sb.slider("focus overlap", 0.0, 2.0, w.focus_overlap, 0.1)
-w_trait = sb.slider("trait match", 0.0, 2.0, w.trait_match, 0.1)
-w_symptom = sb.slider("symptom fit", 0.0, 2.0, w.symptom_fit, 0.1)
-w_pref = sb.slider("mentor preference", 0.0, 2.0, w.mentor_pref, 0.1)
-
-sb.subheader("Thresholds")
-min_acc = sb.slider("min acceptable score", 0.0, 1.0, file_cfg.thresholds.min_acceptable_score, 0.05)
-poor_fit = sb.slider("poor-fit (review queue)", 0.0, 1.0, file_cfg.thresholds.poor_fit_threshold, 0.05)
-reject_p = sb.slider("Q4 rejection probability", 0.0, 0.5, file_cfg.rejection_probability, 0.05)
-seed = sb.number_input("random seed", value=file_cfg.random_seed, step=1)
-
 sb.header("✍️ Manual overrides")
-sb.caption("One per line. Pairs as `student_id,mentor_id`.")
-force_txt = sb.text_area("Force pairs", height=70, key="force")
-block_txt = sb.text_area("Block pairs", height=70, key="block")
+sb.caption("Applied when you click Run on any question. Pairs as `student_id,mentor_id`.")
+force_txt = sb.text_area("Force pairs", height=68, key="force")
+block_txt = sb.text_area("Block pairs", height=68, key="block")
 skip_s_txt = sb.text_area("Skip students (ids)", height=60, key="skips")
 skip_m_txt = sb.text_area("Skip mentors (ids)", height=60, key="skipm")
-
-
-def current_config() -> Config:
-    return Config(
-        session_length_minutes=session_len,
-        max_students_per_mentor=int(max_cap),
-        enforce_gender=enforce_gender,
-        weights=Weights(focus_overlap=w_focus, trait_match=w_trait,
-                        symptom_fit=w_symptom, mentor_pref=w_pref),
-        thresholds=Thresholds(min_acceptable_score=min_acc, poor_fit_threshold=poor_fit),
-        rejection_probability=reject_p, random_seed=int(seed),
-        engine=engine, enrichment=file_cfg.enrichment,
-    )
 
 
 def _parse_pairs(txt):
@@ -152,10 +109,65 @@ def current_overrides() -> Overrides:
     )
 
 
-tab_data, tab_match = st.tabs(["📁 Data", "🎯 Matching"])
+def build_config(focus=0.0, trait=0.0, symptom=0.0, mentor_pref=0.0) -> Config:
+    """Config from the shared Q1 hard-constraints + the given (per-question) weights."""
+    s = st.session_state
+    return Config(
+        session_length_minutes=s.get("q1_session_len", file_cfg.session_length_minutes),
+        max_students_per_mentor=int(s.get("q1_max_cap", file_cfg.max_students_per_mentor or 12)),
+        enforce_gender=s.get("q1_enforce_gender", file_cfg.enforce_gender),
+        weights=Weights(focus_overlap=focus, trait_match=trait,
+                        symptom_fit=symptom, mentor_pref=mentor_pref),
+        thresholds=Thresholds(min_acceptable_score=s.get("q23_min_acc",
+                                                         file_cfg.thresholds.min_acceptable_score),
+                              poor_fit_threshold=s.get("q3_poor_fit",
+                                                       file_cfg.thresholds.poor_fit_threshold)),
+        rejection_probability=s.get("q4_reject", file_cfg.rejection_probability),
+        random_seed=int(s.get("q4_seed", file_cfg.random_seed)),
+        engine=s.get("q1_engine", file_cfg.engine),
+        enrichment=file_cfg.enrichment,
+    )
+
+
+# ----------------------------- display helpers ----------------------------
+def show_assignments(res, key):
+    df = pd.DataFrame(res.assignments)
+    st.dataframe(df, use_container_width=True, height=380)
+    st.download_button("⬇ assignments.csv", df.to_csv(index=False),
+                       f"{key}_assignments.csv", "text/csv", key=f"dl_{key}")
+
+
+def show_unassigned(res):
+    u = pd.DataFrame(res.unassigned)
+    if u.empty:
+        st.success("Everyone matched.")
+        return
+    st.dataframe(u["reason"].value_counts().rename_axis("reason").reset_index(name="count"),
+                 use_container_width=True)
+    st.dataframe(u, use_container_width=True, height=240)
+
+
+def show_metrics(res, cfg, baseline=None):
+    s = summarize(res, len(st.session_state.students), cfg)
+    cols = st.columns(5)
+    cols[0].metric("Matched", f"{s['matched']}/{s['total_students']}",
+                   f"{s['coverage']*100:.1f}% coverage")
+    delta = None
+    if baseline is not None:
+        delta = baseline_delta(res, baseline, len(st.session_state.students), cfg)
+    cols[1].metric("Mean score", f"{s['mean_score']:.3f}",
+                   f"{delta['mean_score_delta']:+.3f} vs random" if delta else None)
+    cols[2].metric("Median score", f"{s['median_score']:.3f}")
+    cols[3].metric("% above acceptable", f"{s['pct_above_min_acceptable']*100:.1f}%")
+    cols[4].metric("Review queue", s["review_queue_size"])
+
+
+tabs = st.tabs(["📁 Data", "🤖 Enrichment",
+                "1️⃣ Q1 · Feasible", "2️⃣ Q2 · Parent expectations",
+                "3️⃣ Q3 · Two-way fit", "4️⃣ Q4 · Rejection & re-match"])
 
 # ============================== DATA TAB ==================================
-with tab_data:
+with tabs[0]:
     src = st.session_state.data_source
     c1, c2, c3 = st.columns(3)
     c1.metric("Students", len(st.session_state.students))
@@ -163,169 +175,203 @@ with tab_data:
     c3.metric("Active dataset", src)
 
     st.subheader("⬆️ Upload / reset dataset")
-    st.caption("Upload replacement CSVs (must keep the same columns). Leave one empty to "
-               "keep the current one. Uploads live for this session only.")
+    st.caption("Upload replacement CSVs (same columns). Leave one empty to keep the current one.")
     uc1, uc2 = st.columns(2)
     up_s = uc1.file_uploader("Students CSV", type="csv", key="up_s")
     up_m = uc2.file_uploader("Mentors CSV", type="csv", key="up_m")
-    uc1.caption("Required columns: " + ", ".join(STUDENT_COLUMNS))
-    uc2.caption("Required columns: " + ", ".join(MENTOR_COLUMNS))
-
-    b1, b2 = st.columns([1, 1])
+    uc1.caption("Required: " + ", ".join(STUDENT_COLUMNS))
+    uc2.caption("Required: " + ", ".join(MENTOR_COLUMNS))
+    b1, b2 = st.columns(2)
     if b1.button("📥 Load uploaded data", type="primary", disabled=not (up_s or up_m)):
         try:
             sdf = pd.read_csv(up_s) if up_s else st.session_state.students_df
             mdf = pd.read_csv(up_m) if up_m else st.session_state.mentors_df
-            miss = []
-            if up_s:
-                miss += [f"students: {c}" for c in validate_columns(sdf, STUDENT_COLUMNS)]
-            if up_m:
-                miss += [f"mentors: {c}" for c in validate_columns(mdf, MENTOR_COLUMNS)]
+            miss = ([f"students: {c}" for c in validate_columns(sdf, STUDENT_COLUMNS)] if up_s else []) \
+                + ([f"mentors: {c}" for c in validate_columns(mdf, MENTOR_COLUMNS)] if up_m else [])
             if miss:
-                st.error("Missing required columns → " + "; ".join(miss))
+                st.error("Missing columns → " + "; ".join(miss))
             else:
                 set_dataset(students_from_df(sdf), mentors_from_df(mdf), sdf, mdf, "uploaded")
-                st.success(f"Loaded {len(sdf)} students × {len(mdf)} mentors.")
+                st.success(f"Loaded {len(sdf)} students × {len(mdf)} mentors. Re-run the questions.")
                 st.rerun()
-        except Exception as e:  # noqa: BLE001 — surface parse errors to the user
-            st.error(f"Could not parse uploaded data: {e}")
-
+        except Exception as e:  # noqa: BLE001
+            st.error(f"Could not parse: {e}")
     if b2.button("♻️ Reset to default data", disabled=src == "default"):
         load_default_dataset()
-        st.success("Reverted to the bundled dataset.")
         st.rerun()
 
     st.subheader("🧠 Enrichment cache")
     sc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.srecs.values()))
     mc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.mrecs.values()))
-    st.caption(f"Backend: **{store_mod.backend_name()}** · tags by source — "
-               f"students: {sc} · mentors: {mc}")
+    st.caption(f"Backend: **{store_mod.backend_name()}** · students: {sc} · mentors: {mc}")
     e1, e2, e3 = st.columns(3)
     if e1.button("💾 Save tags to cache"):
         enrich_mod.save_cache(file_cfg, "student", st.session_state.srecs)
         enrich_mod.save_cache(file_cfg, "mentor", st.session_state.mrecs)
-        st.success(f"Saved {len(st.session_state.srecs)} student + "
-                   f"{len(st.session_state.mrecs)} mentor tag records to cache.")
+        st.success("Saved.")
     e2.download_button("⬇ students_enriched.json",
                        json.dumps(st.session_state.srecs, ensure_ascii=False, indent=2),
                        "students_enriched.json", "application/json")
     e3.download_button("⬇ mentors_enriched.json",
                        json.dumps(st.session_state.mrecs, ensure_ascii=False, indent=2),
                        "mentors_enriched.json", "application/json")
-    if store_mod.configured():
-        st.caption("✅ Supabase is connected — enrichment is saved there and persists "
-                   "across redeploys automatically.")
-    else:
-        st.caption("⚠️ No Supabase configured — tags save to the local disk only "
-                   "(ephemeral on Render). Set SUPABASE_URL/SUPABASE_KEY, or download the "
-                   "JSON and commit it, for permanent reuse.")
 
     st.subheader("👀 Current data")
     dt1, dt2 = st.tabs([f"Students ({len(st.session_state.students)})",
                         f"Mentors ({len(st.session_state.mentors)})"])
-    with dt1:
-        st.dataframe(st.session_state.students_df, use_container_width=True, height=380)
-        st.download_button("Download students.csv",
-                           st.session_state.students_df.to_csv(index=False),
-                           "students.csv", "text/csv")
-    with dt2:
-        st.dataframe(st.session_state.mentors_df, use_container_width=True, height=380)
-        st.download_button("Download mentors.csv",
-                           st.session_state.mentors_df.to_csv(index=False),
-                           "mentors.csv", "text/csv")
+    dt1.dataframe(st.session_state.students_df, use_container_width=True, height=360)
+    dt2.dataframe(st.session_state.mentors_df, use_container_width=True, height=360)
 
-# ============================== MATCHING TAB ==============================
-with tab_match:
-    students = st.session_state.students
-    mentors = st.session_state.mentors
-    srecs, mrecs = st.session_state.srecs, st.session_state.mrecs
-
-    # ---- LLM enrichment (key auto-loaded) ----
-    st.subheader("🤖 LLM enrichment (live)")
+# ============================== ENRICHMENT TAB ===========================
+with tabs[1]:
+    st.subheader("🤖 LLM enrichment (OpenAI)")
+    st.caption("Turns the messy VI/EN text into structured tags used by Q2 and Q3. "
+               "Q1 does not need it. Tags persist to the active backend.")
     key = integrated_key()
-    with st.expander("Run OpenAI enrichment on the messy VI/EN text → structured tags",
-                     expanded=False):
-        if key:
-            st.success("🔑 OpenAI key loaded from environment — no input needed.")
-        else:
-            st.warning("No OPENAI_API_KEY in secrets/env. Set it on Render (or "
-                       ".streamlit/secrets.toml) to enable live enrichment. "
-                       "Matching still works on the offline cache.")
-        st.caption(f"Persistence backend: **{store_mod.backend_name()}**")
-        c1, c2, c3 = st.columns([2, 1, 1])
-        model = c1.text_input("Model", value=file_cfg.enrichment.resolve_model())
-        kind = c2.selectbox("Target", ["student", "mentor"])
-        pool = students if kind == "student" else mentors
-        sample = c3.number_input("Sample rows", 1, len(pool), min(25, len(pool)), 25,
-                                 help="Enrich the first N rows live (keeps cost low).")
-        all_rows = st.checkbox(f"Enrich ALL {len(pool)} {kind}s (slower / costlier)")
-        if st.button("▶ Run enrichment", type="primary", disabled=not key):
-            items = pool if all_rows else pool[: int(sample)]
-            bar = st.progress(0.0, text="Calling OpenAI…")
-            recs = enrich_mod.enrich_sync(
-                items, kind, model, key, file_cfg.enrichment.max_workers,
-                file_cfg.enrichment.max_retries,
-                progress_cb=lambda d, t: bar.progress(d / t, text=f"Enriched {d}/{t}"))
-            full = st.session_state.srecs if kind == "student" else st.session_state.mrecs
-            full.update(recs)
-            enrich_mod.save_cache(file_cfg, kind, full)   # persist tags for reuse
-            bar.empty()
-            n_failed = sum(1 for r in recs.values() if r.get("llm_failed"))
-            msg = (f"Live-enriched {len(recs)} {kind} rows with {model} — "
-                   f"saved to {store_mod.backend_name()} for reuse.")
-            if n_failed:
-                msg += f" ({n_failed} rows stayed unenriched after retries.)"
-            st.success(msg)
-            srecs, mrecs = st.session_state.srecs, st.session_state.mrecs
+    if key:
+        st.success("🔑 OpenAI key loaded from environment.")
+    else:
+        st.warning("No OPENAI_API_KEY found. Q1 still runs; Q2/Q3 need enrichment.")
+    st.caption(f"Persistence backend: **{store_mod.backend_name()}**")
+    c1, c2, c3 = st.columns([2, 1, 1])
+    model = c1.text_input("Model", value=file_cfg.enrichment.resolve_model())
+    kind = c2.selectbox("Target", ["student", "mentor"])
+    pool = st.session_state.students if kind == "student" else st.session_state.mentors
+    sample = c3.number_input("Sample rows", 1, len(pool), min(25, len(pool)), 25)
+    all_rows = st.checkbox(f"Enrich ALL {len(pool)} {kind}s (slower / costlier)")
+    if st.button("▶ Run enrichment", type="primary", disabled=not key):
+        items = pool if all_rows else pool[: int(sample)]
+        bar = st.progress(0.0, text="Calling OpenAI…")
+        recs = enrich_mod.enrich_sync(
+            items, kind, model, key, file_cfg.enrichment.max_workers,
+            file_cfg.enrichment.max_retries,
+            progress_cb=lambda d, t: bar.progress(d / t, text=f"Enriched {d}/{t}"))
+        full = st.session_state.srecs if kind == "student" else st.session_state.mrecs
+        full.update(recs)
+        enrich_mod.save_cache(file_cfg, kind, full)
+        bar.empty()
+        n_failed = sum(1 for r in recs.values() if r.get("llm_failed"))
+        msg = f"Enriched {len(recs)} {kind} rows — saved to {store_mod.backend_name()}."
+        if n_failed:
+            msg += f" ({n_failed} stayed unenriched after retries.)"
+        st.success(msg + " Re-run Q2/Q3 to use the new tags.")
+    sc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.srecs.values()))
+    mc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.mrecs.values()))
+    st.caption(f"Tags by source — students: {sc} · mentors: {mc}")
 
-    def _src_counts(recs):
-        return dict(collections.Counter(r.get("source", "unenriched") for r in recs.values()))
-    st.caption(f"Enrichment source — students: {_src_counts(srecs)} · mentors: {_src_counts(mrecs)}")
+# ============================== Q1 TAB ===================================
+with tabs[2]:
+    st.subheader("Q1 · Feasible matching (hard constraints only)")
+    st.caption("Assign each student to one mentor satisfying **gender + time + capacity**. "
+               "No preference scoring here.")
+    c1, c2 = st.columns(2)
+    c1.slider("Session length (min)", 15, 120, file_cfg.session_length_minutes, 15, key="q1_session_len")
+    c2.slider("Max students per mentor", 1, 30, file_cfg.max_students_per_mentor or 12, key="q1_max_cap")
+    c1.checkbox("Enforce requested gender (hard)", file_cfg.enforce_gender, key="q1_enforce_gender")
+    c2.selectbox("Engine", ["optimal", "greedy"],
+                 index=0 if file_cfg.engine == "optimal" else 1, key="q1_engine")
+    if st.button("▶ Run Q1", type="primary", key="run_q1"):
+        cfg = build_config()  # all weights 0 -> pure feasibility
+        st.session_state.q1 = (run_matching(st.session_state.students, st.session_state.mentors,
+                                            st.session_state.srecs, st.session_state.mrecs,
+                                            cfg, current_overrides(), engine=cfg.engine), cfg)
+    if "q1" in st.session_state:
+        res, cfg = st.session_state.q1
+        show_metrics(res, cfg)
+        t1, t2 = st.tabs(["✅ Assignments", "🚫 Unassigned (why)"])
+        with t1:
+            show_assignments(res, "q1")
+        with t2:
+            show_unassigned(res)
+    else:
+        st.info("Click **Run Q1** to compute the feasible matching.")
 
-    # ---- run matching ----
-    cfg = current_config()
-    ov = current_overrides()
-    result = run_matching(students, mentors, srecs, mrecs, cfg, ov, engine=cfg.engine)
-    baseline = run_matching(students, mentors, srecs, mrecs, cfg, ov, engine="random")
-    summary = summarize(result, len(students), cfg)
-    delta = baseline_delta(result, baseline, len(students), cfg)
+# ============================== Q2 TAB ===================================
+with tabs[3]:
+    st.subheader("Q2 · Parent / student expectations")
+    st.caption("Among feasible pairs, prefer mentors whose focus areas and traits match what the "
+               "parent/student asked for. Weights below serve **Q2**.")
+    c1, c2 = st.columns(2)
+    f = c1.slider("Q2 · focus-overlap weight", 0.0, 2.0, file_cfg.weights.focus_overlap, 0.1, key="q2_focus")
+    t = c2.slider("Q2 · trait-match weight", 0.0, 2.0, file_cfg.weights.trait_match, 0.1, key="q2_trait")
+    st.slider("Min acceptable score (metric)", 0.0, 1.0,
+              file_cfg.thresholds.min_acceptable_score, 0.05, key="q23_min_acc")
+    if st.button("▶ Run Q2", type="primary", key="run_q2"):
+        cfg = build_config(focus=f, trait=t)
+        res = run_matching(st.session_state.students, st.session_state.mentors,
+                           st.session_state.srecs, st.session_state.mrecs,
+                           cfg, current_overrides(), engine=cfg.engine)
+        base = run_matching(st.session_state.students, st.session_state.mentors,
+                            st.session_state.srecs, st.session_state.mrecs,
+                            cfg, current_overrides(), engine="random")
+        st.session_state.q2 = (res, cfg, base)
+    if "q2" in st.session_state:
+        res, cfg, base = st.session_state.q2
+        show_metrics(res, cfg, baseline=base)
+        show_assignments(res, "q2")
+    else:
+        st.info("Click **Run Q2**. (Run enrichment first for non-zero scores.)")
 
-    st.subheader("📊 Match quality")
-    m1, m2, m3, m4, m5 = st.columns(5)
-    m1.metric("Matched", f"{summary['matched']}/{summary['total_students']}",
-              f"{summary['coverage']*100:.1f}% coverage")
-    m2.metric("Mean score", f"{summary['mean_score']:.3f}",
-              f"{delta['mean_score_delta']:+.3f} vs random")
-    m3.metric("Median score", f"{summary['median_score']:.3f}")
-    m4.metric("% above acceptable", f"{summary['pct_above_min_acceptable']*100:.1f}%")
-    m5.metric("Review queue", summary["review_queue_size"])
+# ============================== Q3 TAB ===================================
+with tabs[4]:
+    st.subheader("Q3 · Two-way fit (mentor preferences + student symptoms)")
+    st.caption("Extends Q2: also weighs the student's symptom needs and the mentor's own "
+               "preferred-student profile. Weights below serve **Q3** and build on Q2's weights.")
+    c1, c2 = st.columns(2)
+    sym = c1.slider("Q3 · symptom-fit weight", 0.0, 2.0, file_cfg.weights.symptom_fit, 0.1, key="q3_symptom")
+    mp = c2.slider("Q3 · mentor-preference weight", 0.0, 2.0, file_cfg.weights.mentor_pref, 0.1, key="q3_pref")
+    st.slider("Poor-fit threshold (review queue)", 0.0, 1.0,
+              file_cfg.thresholds.poor_fit_threshold, 0.05, key="q3_poor_fit")
+    st.caption(f"Inherits Q2 weights — focus: {st.session_state.get('q2_focus', file_cfg.weights.focus_overlap)}, "
+               f"trait: {st.session_state.get('q2_trait', file_cfg.weights.trait_match)} (set in the Q2 tab).")
+    if st.button("▶ Run Q3", type="primary", key="run_q3"):
+        cfg = build_config(focus=st.session_state.get("q2_focus", file_cfg.weights.focus_overlap),
+                           trait=st.session_state.get("q2_trait", file_cfg.weights.trait_match),
+                           symptom=sym, mentor_pref=mp)
+        res = run_matching(st.session_state.students, st.session_state.mentors,
+                           st.session_state.srecs, st.session_state.mrecs,
+                           cfg, current_overrides(), engine=cfg.engine)
+        base = run_matching(st.session_state.students, st.session_state.mentors,
+                            st.session_state.srecs, st.session_state.mrecs,
+                            cfg, current_overrides(), engine="random")
+        st.session_state.q3 = (res, cfg, base)
+    if "q3" in st.session_state:
+        res, cfg, base = st.session_state.q3
+        show_metrics(res, cfg, baseline=base)
+        t1, t2 = st.tabs(["✅ Assignments", "⚠️ Review queue (poor fits)"])
+        with t1:
+            show_assignments(res, "q3")
+        with t2:
+            st.dataframe(pd.DataFrame(res.review_queue), use_container_width=True, height=360)
+    else:
+        st.info("Click **Run Q3**. (Run enrichment first for non-zero scores.)")
 
-    tabs = st.tabs(["✅ Assignments", "🚫 Unassigned", "⚠️ Review queue", "🔁 Q4 re-match"])
-    with tabs[0]:
-        df = pd.DataFrame(result.assignments)
-        st.dataframe(df, use_container_width=True, height=420)
-        st.download_button("Download assignments.csv", df.to_csv(index=False),
-                           "assignments.csv", "text/csv")
-    with tabs[1]:
-        u = pd.DataFrame(result.unassigned)
-        if not u.empty:
-            st.dataframe(u["reason"].value_counts().rename_axis("reason").reset_index(name="count"),
-                         use_container_width=True)
-            st.dataframe(u, use_container_width=True, height=300)
-        else:
-            st.success("Everyone matched.")
-    with tabs[2]:
-        st.caption(f"Feasible pairs scoring below the poor-fit threshold ({poor_fit:.2f}).")
-        st.dataframe(pd.DataFrame(result.review_queue), use_container_width=True, height=420)
-    with tabs[3]:
-        st.caption(f"Simulate ~{reject_p*100:.0f}% of students rejecting their mentor, then re-match.")
-        if st.button("Run Q4 simulation"):
-            rr = simulate_and_rematch(students, mentors, srecs, mrecs, cfg, ov)
-            before = summarize(rr.initial, len(students), cfg)
-            after = summarize(rr.final, len(students), cfg)
-            a, b, c = st.columns(3)
-            a.metric("Rejected", len(rr.rejected_ids))
-            b.metric("Mean score before", f"{before['mean_score']:.3f}")
-            c.metric("Mean score after", f"{after['mean_score']:.3f}",
-                     f"{after['mean_score']-before['mean_score']:+.3f}")
-            st.dataframe(pd.DataFrame(rr.final.assignments), use_container_width=True, height=360)
+# ============================== Q4 TAB ===================================
+with tabs[5]:
+    st.subheader("Q4 · Rejection & re-matching")
+    st.caption("Take the Q3 match, simulate students rejecting their mentor, then re-match the "
+               "rejected ones (barred from their old mentor). Parameters below serve **Q4**.")
+    c1, c2 = st.columns(2)
+    c1.slider("Rejection probability", 0.0, 0.5, file_cfg.rejection_probability, 0.05, key="q4_reject")
+    c2.number_input("Random seed", value=file_cfg.random_seed, step=1, key="q4_seed")
+    if st.button("▶ Run Q4", type="primary", key="run_q4"):
+        cfg = build_config(focus=st.session_state.get("q2_focus", file_cfg.weights.focus_overlap),
+                           trait=st.session_state.get("q2_trait", file_cfg.weights.trait_match),
+                           symptom=st.session_state.get("q3_symptom", file_cfg.weights.symptom_fit),
+                           mentor_pref=st.session_state.get("q3_pref", file_cfg.weights.mentor_pref))
+        st.session_state.q4 = (simulate_and_rematch(
+            st.session_state.students, st.session_state.mentors,
+            st.session_state.srecs, st.session_state.mrecs, cfg, current_overrides()), cfg)
+    if "q4" in st.session_state:
+        rr, cfg = st.session_state.q4
+        before = summarize(rr.initial, len(st.session_state.students), cfg)
+        after = summarize(rr.final, len(st.session_state.students), cfg)
+        m = st.columns(4)
+        m[0].metric("Rejected", len(rr.rejected_ids))
+        m[1].metric("Mean score before", f"{before['mean_score']:.3f}")
+        m[2].metric("Mean score after", f"{after['mean_score']:.3f}",
+                    f"{after['mean_score']-before['mean_score']:+.3f}")
+        m[3].metric("Coverage after", f"{after['coverage']*100:.1f}%")
+        show_assignments(rr.final, "q4")
+    else:
+        st.info("Click **Run Q4**. (It uses the Q3 weights; run Q3/enrichment first.)")

@@ -39,9 +39,20 @@ Enrichment is **LLM-only** (OpenAI). The semantic tags come solely from the LLM 
 
 ```bash
 pip install -e .                       # or: pip install -r requirements.txt
-python -m matcher.cli run              # match on the committed cache → outputs/
+python -m matcher.cli run              # match via CLI → outputs/
 streamlit run app/streamlit_app.py     # interactive UI
 ```
+
+### Using the app
+
+The UI has a tab per stage: **📁 Data · 🤖 Enrichment · Q1 · Q2 · Q3 · Q4**. Each question is self-contained — its own controls plus a **▶ Run** button that executes *that question's* method (nothing auto-recomputes):
+
+- **Q1** — hard constraints (session length, capacity, gender, engine) → feasible matching + unassigned reasons.
+- **Q2** — focus + trait weights → parent-expectation scoring, shown vs the random baseline.
+- **Q3** — symptom + mentor-preference weights (building on Q2) → two-way fit + poor-fit review queue.
+- **Q4** — rejection probability + seed → simulate rejection on the Q3 match and re-match.
+
+Run **🤖 Enrichment** first so Q2/Q3 have LLM tags (Q1 doesn't need it). Manual overrides (force/block/skip) are in the sidebar and apply on the next Run.
 
 `python -m matcher.cli run` prints a metrics summary and writes `outputs/run_assignments.csv`, `run_unassigned.csv`, `run_review_queue.csv`. Other commands:
 
