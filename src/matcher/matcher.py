@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 
 import networkx as nx
 
@@ -118,9 +118,21 @@ def run_matching(students: List[Student], mentors: List[Mentor],
                  srecs: Dict[str, dict], mrecs: Dict[str, dict],
                  cfg: Config, overrides: Overrides,
                  engine: Optional[str] = None,
-                 blocked_extra: Optional[set] = None) -> Result:
+                 blocked_extra: Optional[set] = None,
+                 progress_cb: Optional[Callable[[str, float], None]] = None) -> Result:
     """Full matching pass. ``blocked_extra`` adds (student_id, mentor_id) pairs to
-    forbid (used by Q4 re-matching to bar a rejected mentor)."""
+    forbid (used by Q4 re-matching to bar a rejected mentor).
+
+    ``progress_cb(stage, frac)`` is called at each pipeline stage with a
+    monotonically increasing ``frac`` in [0, 1]; ``stage`` is one of
+    ``feasibility``, ``scoring``, ``engine:<name>``, ``booking``, ``repair``,
+    ``done``. The ``engine`` stage (especially ``optimal``, a min-cost
+    max-flow solve) is by far the slowest on the full dataset, so the bar
+    will sit at that stage for most of the wait."""
+    def _tick(stage: str, frac: float) -> None:
+        if progress_cb:
+            progress_cb(stage, frac)
+
     engine = engine or cfg.engine
     mentors_by_id = {m.id: m for m in mentors}
     students_by_id = {s.id: s for s in students}
@@ -133,6 +145,7 @@ def run_matching(students: List[Student], mentors: List[Mentor],
         overrides = ov
 
     feas = build_feasibility(students, mentors, srecs, cfg, overrides)
+    _tick("feasibility", 0.10)
     booker = Booker(cfg.session_length_minutes)
     result = Result(engine=engine)
 
@@ -158,14 +171,17 @@ def run_matching(students: List[Student], mentors: List[Mentor],
     pool = [sid for sid in feas.edges if sid not in forced_students]
     scores = _score_edges(pool, feas.edges, srecs, mrecs, cfg.weights)
     remaining_cap = dict(cap)
+    _tick("scoring", 0.25)
 
     # 3. Run the chosen engine -> tentative student->mentor map.
+    _tick(f"engine:{engine}", 0.30)
     if engine == "greedy":
         tentative = _greedy(pool, feas.edges, scores, remaining_cap)
     elif engine == "random":
         tentative = _random(pool, feas.edges, remaining_cap, cfg.random_seed)
     else:
         tentative = _optimal(pool, feas.edges, scores, remaining_cap)
+    _tick("booking", 0.85)
 
     # 4. Book concrete, non-overlapping blocks (highest score first).
     edge_blocks = {(sid, e.mentor_id): e.blocks for sid in pool for e in feas.edges[sid]}
@@ -184,6 +200,7 @@ def run_matching(students: List[Student], mentors: List[Mentor],
             _row(students_by_id[sid], mentors_by_id[mid], day, start, scores[(sid, mid)], "matched"))
         assigned_ids.add(sid)
 
+    _tick("repair", 0.92)
     # 5. Repair pass — students dropped by booking conflicts or left out by the
     # engine get re-tried on their next-best feasible mentor with free capacity.
     leftover = [sid for sid in pool if sid not in assigned_ids]
@@ -217,6 +234,7 @@ def run_matching(students: List[Student], mentors: List[Mentor],
     thr = cfg.thresholds.poor_fit_threshold
     result.review_queue = [a for a in result.assignments
                            if a["reason"] == "matched" and a["total_score"] < thr]
+    _tick("done", 1.0)
     return result
 
 

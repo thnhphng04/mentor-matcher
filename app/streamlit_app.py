@@ -124,10 +124,39 @@ def current_overrides() -> Overrides:
     )
 
 
-def _match(cfg, engine):
+def _match(cfg, engine, progress_cb=None):
     return run_matching(st.session_state.students, st.session_state.mentors,
                         st.session_state.srecs, st.session_state.mrecs,
-                        cfg, current_overrides(), engine=engine)
+                        cfg, current_overrides(), engine=engine, progress_cb=progress_cb)
+
+
+# ----------------------------- matching progress UI ------------------------
+def _stage_text(stage: str) -> str:
+    """Turn a matcher progress_cb stage key (e.g. 'engine:optimal',
+    'initial:engine:optimal') into a localized caption."""
+    phase, rest = (stage.split(":", 1) if stage.split(":", 1)[0] in ("initial", "final")
+                   else (None, stage))
+    if rest.startswith("engine:"):
+        engine_name = rest.split(":", 1)[1]
+        txt = t("stage_engine", engine=engine_name)
+        if engine_name == "optimal":
+            txt = f"{txt} {t('stage_engine_optimal_hint')}"
+    else:
+        txt = t(f"stage_{rest}")
+    return t(f"stage_{phase}", inner=txt) if phase else txt
+
+
+def _progress_bar():
+    bar = st.progress(0.0, text=_stage_text("feasibility"))
+    def cb(stage, frac):
+        bar.progress(min(max(frac, 0.0), 1.0), text=_stage_text(stage))
+    return bar, cb
+
+
+def _scaled_cb(cb, lo, hi):
+    def inner(stage, frac):
+        cb(stage, lo + frac * (hi - lo))
+    return inner
 
 
 # ----------------------------- display helpers ----------------------------
@@ -354,7 +383,10 @@ with tabs[1]:
                  index=0 if file_cfg.engine == "optimal" else 1, key="q1_engine")
     if st.button(t("run_q1"), type="primary", key="run_q1"):
         cfg = build_config()
-        st.session_state.q1 = (_match(cfg, cfg.engine), cfg)
+        bar, cb = _progress_bar()
+        res = _match(cfg, cfg.engine, progress_cb=cb)
+        bar.empty()
+        st.session_state.q1 = (res, cfg)
     if "q1" in st.session_state:
         res, cfg = st.session_state.q1
         show_metrics(res, cfg)
@@ -376,7 +408,11 @@ with tabs[2]:
     st.slider(t("min_acc"), 0.0, 1.0, file_cfg.thresholds.min_acceptable_score, 0.05, key="q23_min_acc")
     if st.button(t("run_q2"), type="primary", key="run_q2"):
         cfg = build_config(focus=f, trait=tr)
-        st.session_state.q2 = (_match(cfg, cfg.engine), cfg, _match(cfg, "random"))
+        bar, cb = _progress_bar()
+        res = _match(cfg, cfg.engine, progress_cb=_scaled_cb(cb, 0.0, 0.75))
+        base = _match(cfg, "random", progress_cb=_scaled_cb(cb, 0.75, 1.0))
+        bar.empty()
+        st.session_state.q2 = (res, cfg, base)
     if "q2" in st.session_state:
         res, cfg, base = st.session_state.q2
         show_metrics(res, cfg, baseline=base)
@@ -397,7 +433,11 @@ with tabs[3]:
     st.caption(t("q3_inherits", focus=qf, trait=qt))
     if st.button(t("run_q3"), type="primary", key="run_q3"):
         cfg = build_config(focus=qf, trait=qt, symptom=sym, mentor_pref=mp)
-        st.session_state.q3 = (_match(cfg, cfg.engine), cfg, _match(cfg, "random"))
+        bar, cb = _progress_bar()
+        res = _match(cfg, cfg.engine, progress_cb=_scaled_cb(cb, 0.0, 0.75))
+        base = _match(cfg, "random", progress_cb=_scaled_cb(cb, 0.75, 1.0))
+        bar.empty()
+        st.session_state.q3 = (res, cfg, base)
     if "q3" in st.session_state:
         res, cfg, base = st.session_state.q3
         show_metrics(res, cfg, baseline=base)
@@ -421,9 +461,13 @@ with tabs[4]:
                            trait=st.session_state.get("q2_trait", file_cfg.weights.trait_match),
                            symptom=st.session_state.get("q3_symptom", file_cfg.weights.symptom_fit),
                            mentor_pref=st.session_state.get("q3_pref", file_cfg.weights.mentor_pref))
-        st.session_state.q4 = (simulate_and_rematch(
+        bar, cb = _progress_bar()
+        rr = simulate_and_rematch(
             st.session_state.students, st.session_state.mentors,
-            st.session_state.srecs, st.session_state.mrecs, cfg, current_overrides()), cfg)
+            st.session_state.srecs, st.session_state.mrecs, cfg, current_overrides(),
+            progress_cb=cb)
+        bar.empty()
+        st.session_state.q4 = (rr, cfg)
     if "q4" in st.session_state:
         rr, cfg = st.session_state.q4
         before = summarize(rr.initial, len(st.session_state.students), cfg)
