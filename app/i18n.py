@@ -294,54 +294,46 @@ INSTRUCTION = {
 
 The app matches **students to mentors**. Work top-to-bottom; each question (Q1–Q4) runs only when you press its **Run** button.
 
-### 1. Prepare data — 📁 Data tab
-- View the current students/mentors tables and counts.
-- Optionally **upload** replacement CSVs (same columns) — this replaces the dataset (and saves it to Supabase if connected). **Reset** reverts to the bundled data.
+### 1. Prepare data — 📁 Data & Enrichment tab
+- View the current students/mentors tables — **Raw data** and **Enriched tags** are shown in separate sections.
+- Upload replacement CSVs (same columns) — this replaces the dataset and **automatically runs LLM enrichment on every uploaded row**, saving the new tags. (Needs an OpenAI API key; without one, the data loads unenriched and Q2/Q3 score 0 until it's enriched.)
 
-### 2. Enrich the text — 🤖 Enrichment tab
-- This calls OpenAI to turn the messy Vietnamese/English notes into structured **tags** used by Q2 and Q3 (**Q1 does not need it**).
-- Pick a **sample size** (start small to test) or **Enrich ALL**, then **Run enrichment**. Tags are saved automatically.
-
-### 3. Run the questions — tabs Q1 → Q4
+### 2. Run the questions — tabs Q1 → Q4
 Each tab has its own controls and a **Run** button:
 - **Q1 — Feasible:** set session length, capacity, gender, engine → match on hard constraints. See who's unassigned and **why**.
 - **Q2 — Parent expectations:** set focus/trait weights → score by what the parent/student asked for, compared to a random baseline.
 - **Q3 — Two-way fit:** set symptom/mentor-preference weights (builds on Q2) → two-sided score + a **review queue** of weak matches.
 - **Q4 — Rejection & re-match:** set rejection probability → simulate ~20% rejecting and re-match; see score before/after.
 
-### 4. Manual overrides — left sidebar
+### 3. Manual overrides — left sidebar
 - **Force pair:** pin a student to a mentor. **Block pair:** forbid a pairing. **Skip:** remove someone from the pool.
 - Pick people **by name** (searchable), click **Add pair**. Overrides apply on the next **Run**.
 
 ### Tip
-Run **Enrichment** before Q2/Q3, otherwise their scores are 0 (Q1 still works without it).
+Q1 always works, even on unenriched data. If Q2/Q3 show a score of 0, the data hasn't been enriched yet — re-upload the same CSVs in the **Data & Enrichment** tab to trigger enrichment.
 """,
     "vi": """
 ## 📖 Cách sử dụng ứng dụng
 
 Ứng dụng ghép **học sinh với mentor**. Làm theo thứ tự từ trên xuống; mỗi câu hỏi (Q1–Q4) chỉ chạy khi bạn bấm nút **Run** của nó.
 
-### 1. Chuẩn bị dữ liệu — tab 📁 Dữ liệu
-- Xem bảng học sinh/mentor và số lượng hiện tại.
-- Có thể **tải lên** CSV thay thế (cùng cột) — thao tác này thay thế bộ dữ liệu (và lưu vào Supabase nếu đã kết nối). **Đặt lại** để quay về dữ liệu mặc định.
+### 1. Chuẩn bị dữ liệu — tab 📁 Dữ liệu & Làm giàu
+- Xem bảng học sinh/mentor — **Dữ liệu gốc** và **Nhãn đã làm giàu** được hiển thị ở hai khu vực riêng.
+- Tải lên CSV thay thế (cùng cột) — thao tác này thay thế bộ dữ liệu và **tự động chạy làm giàu bằng LLM cho mọi dòng vừa tải lên**, rồi lưu nhãn mới. (Cần có khóa API OpenAI; nếu không có, dữ liệu sẽ tải lên ở trạng thái chưa làm giàu và Q2/Q3 cho điểm 0 cho tới khi được làm giàu.)
 
-### 2. Làm giàu văn bản — tab 🤖 Làm giàu
-- Bước này gọi OpenAI để chuyển các ghi chú lộn xộn (Việt/Anh) thành **nhãn** có cấu trúc dùng cho Q2 và Q3 (**Q1 không cần**).
-- Chọn **số dòng mẫu** (nên thử ít trước) hoặc **Làm giàu TẤT CẢ**, rồi bấm **Chạy làm giàu**. Nhãn được lưu tự động.
-
-### 3. Chạy các câu hỏi — tab Q1 → Q4
+### 2. Chạy các câu hỏi — tab Q1 → Q4
 Mỗi tab có điều khiển riêng và một nút **Run**:
 - **Q1 — Khả thi:** đặt thời lượng buổi, sức chứa, giới tính, thuật toán → ghép theo ràng buộc cứng. Xem ai chưa được ghép và **lý do**.
 - **Q2 — Kỳ vọng phụ huynh:** đặt trọng số lĩnh vực/tính cách → chấm điểm theo mong muốn của phụ huynh/học sinh, so với mốc ngẫu nhiên.
 - **Q3 — Phù hợp hai chiều:** đặt trọng số triệu chứng/mong muốn của mentor (cộng dồn Q2) → điểm hai chiều + **hàng chờ duyệt** các cặp kém phù hợp.
 - **Q4 — Từ chối & ghép lại:** đặt xác suất từ chối → mô phỏng ~20% từ chối và ghép lại; xem điểm trước/sau.
 
-### 4. Ghi đè thủ công — thanh bên trái
+### 3. Ghi đè thủ công — thanh bên trái
 - **Cặp bắt buộc:** ghim một học sinh với một mentor. **Cặp cấm:** cấm một cặp. **Bỏ qua:** loại một người khỏi danh sách.
 - Chọn người **theo tên** (tìm kiếm được), bấm **Thêm cặp**. Ghi đè áp dụng ở lần **Run** kế tiếp.
 
 ### Lưu ý
-Hãy chạy **Làm giàu** trước Q2/Q3, nếu không điểm của chúng sẽ bằng 0 (Q1 vẫn chạy được mà không cần).
+Q1 luôn chạy được, kể cả với dữ liệu chưa làm giàu. Nếu Q2/Q3 hiện điểm 0, nghĩa là dữ liệu chưa được làm giàu — hãy tải lại đúng các file CSV đó trong tab **Dữ liệu & Làm giàu** để kích hoạt làm giàu.
 """,
 }
 
