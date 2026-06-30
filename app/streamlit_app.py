@@ -66,13 +66,32 @@ def set_dataset(students, mentors, sdf, mdf, source):
     _rebuild_enrichment()
 
 
-def load_default_dataset():
+def _records(df):
+    """DataFrame -> list of JSON-safe row dicts (NaN -> None) for Supabase."""
+    return df.where(pd.notna(df), None).to_dict("records")
+
+
+def load_default_dataset(persist: bool = False):
     sdf, mdf = pd.read_csv(DEFAULT_STUDENTS), pd.read_csv(DEFAULT_MENTORS)
+    if persist:  # used by Reset: clear the DB so default is the source again
+        store_mod.dataset_replace("student", [])
+        store_mod.dataset_replace("mentor", [])
     set_dataset(students_from_df(sdf), mentors_from_df(mdf), sdf, mdf, "default")
 
 
+def load_initial_dataset():
+    """Prefer the dataset stored in Supabase; fall back to the bundled CSVs."""
+    s_rows = store_mod.dataset_load("student")
+    m_rows = store_mod.dataset_load("mentor")
+    if s_rows and m_rows:
+        sdf, mdf = pd.DataFrame(s_rows), pd.DataFrame(m_rows)
+        set_dataset(students_from_df(sdf), mentors_from_df(mdf), sdf, mdf, "supabase")
+    else:
+        load_default_dataset()
+
+
 if "students" not in st.session_state:
-    load_default_dataset()
+    load_initial_dataset()
 
 
 def integrated_key() -> str | None:
@@ -84,28 +103,46 @@ st.caption("Rule-driven, tunable matching · each question (Q1–Q4) runs its ow
 
 # ----------------------------- sidebar: overrides -------------------------
 sb = st.sidebar
-sb.header("✍️ Manual overrides")
-sb.caption("Applied when you click Run on any question. Pairs as `student_id,mentor_id`.")
-force_txt = sb.text_area("Force pairs", height=68, key="force")
-block_txt = sb.text_area("Block pairs", height=68, key="block")
-skip_s_txt = sb.text_area("Skip students (ids)", height=60, key="skips")
-skip_m_txt = sb.text_area("Skip mentors (ids)", height=60, key="skipm")
+sb.header("✍️ Overrides")
+sb.caption("Search by name to add pairs. Applied when you click Run on any question.")
+
+_student_label = {s.id: f"{s.name} · {s.id[:8]}" for s in st.session_state.students}
+_mentor_label = {m.id: f"{m.name} · {m.id[:8]}" for m in st.session_state.mentors}
+st.session_state.setdefault("force_pairs", [])
+st.session_state.setdefault("block_pairs", [])
 
 
-def _parse_pairs(txt):
-    out = []
-    for line in txt.splitlines():
-        if "," in line:
-            a, b = line.split(",", 1)
-            out.append(Pair(student_id=a.strip(), mentor_id=b.strip()))
-    return out
+def _pair_editor(title, state_key, prefix):
+    with sb.expander(title, expanded=False):
+        s_sel = st.selectbox("Student", options=list(_student_label),
+                             format_func=lambda i: _student_label[i], key=f"{prefix}_s")
+        m_sel = st.selectbox("Mentor", options=list(_mentor_label),
+                             format_func=lambda i: _mentor_label[i], key=f"{prefix}_m")
+        if st.button("➕ Add pair", key=f"{prefix}_add", use_container_width=True):
+            if (s_sel, m_sel) not in st.session_state[state_key]:
+                st.session_state[state_key].append((s_sel, m_sel))
+        for i, (a, b) in enumerate(st.session_state[state_key]):
+            c = st.columns([5, 1])
+            c[0].caption(f"{_student_label.get(a, a)} → {_mentor_label.get(b, b)}")
+            if c[1].button("❌", key=f"{prefix}_rm{i}"):
+                st.session_state[state_key].pop(i)
+                st.rerun()
+
+
+_pair_editor("Force pairs (pin a student→mentor)", "force_pairs", "force")
+_pair_editor("Block pairs (forbid a student→mentor)", "block_pairs", "block")
+sb.multiselect("Skip students", options=list(_student_label),
+               format_func=lambda i: _student_label[i], key="skip_s")
+sb.multiselect("Skip mentors", options=list(_mentor_label),
+               format_func=lambda i: _mentor_label[i], key="skip_m")
 
 
 def current_overrides() -> Overrides:
     return Overrides(
-        force=_parse_pairs(force_txt), block=_parse_pairs(block_txt),
-        skip_students=[x.strip() for x in skip_s_txt.splitlines() if x.strip()],
-        skip_mentors=[x.strip() for x in skip_m_txt.splitlines() if x.strip()],
+        force=[Pair(student_id=a, mentor_id=b) for a, b in st.session_state.force_pairs],
+        block=[Pair(student_id=a, mentor_id=b) for a, b in st.session_state.block_pairs],
+        skip_students=list(st.session_state.get("skip_s", [])),
+        skip_mentors=list(st.session_state.get("skip_m", [])),
     )
 
 
@@ -191,13 +228,21 @@ with tabs[0]:
             if miss:
                 st.error("Missing columns → " + "; ".join(miss))
             else:
-                set_dataset(students_from_df(sdf), mentors_from_df(mdf), sdf, mdf, "uploaded")
-                st.success(f"Loaded {len(sdf)} students × {len(mdf)} mentors. Re-run the questions.")
+                # Replace the dataset in Supabase (the new data replaces the old).
+                saved = False
+                if up_s:
+                    saved = store_mod.dataset_replace("student", _records(sdf)) or saved
+                if up_m:
+                    saved = store_mod.dataset_replace("mentor", _records(mdf)) or saved
+                set_dataset(students_from_df(sdf), mentors_from_df(mdf), sdf, mdf,
+                            "supabase" if saved else "uploaded")
+                where = "replaced in Supabase" if saved else "loaded (session only — no Supabase)"
+                st.success(f"{len(sdf)} students × {len(mdf)} mentors {where}. Re-run the questions.")
                 st.rerun()
         except Exception as e:  # noqa: BLE001
             st.error(f"Could not parse: {e}")
     if b2.button("♻️ Reset to default data", disabled=src == "default"):
-        load_default_dataset()
+        load_default_dataset(persist=True)
         st.rerun()
 
     st.subheader("🧠 Enrichment cache")
