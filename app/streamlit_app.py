@@ -20,6 +20,7 @@ import pandas as pd
 import streamlit as st
 
 from matcher import enrich as enrich_mod
+from matcher import store as store_mod
 from matcher.config import (Config, Overrides, Pair, Thresholds, Weights, load_config)
 from matcher.data_io import (MENTOR_COLUMNS, STUDENT_COLUMNS, load_mentors, load_students,
                              mentors_from_df, students_from_df, validate_columns, ROOT)
@@ -28,6 +29,16 @@ from matcher.metrics import baseline_delta, summarize
 from matcher.rematch import simulate_and_rematch
 
 st.set_page_config(page_title="TeenCare Mentor Matcher", layout="wide")
+
+# Bridge Streamlit secrets -> env vars so the (non-Streamlit) store/enrich
+# modules, which read os.environ, see SUPABASE_* / OPENAI_* set via secrets.toml.
+for _k in ("OPENAI_API_KEY", "OPENAI_MODEL", "SUPABASE_URL", "SUPABASE_KEY"):
+    try:
+        if _k not in os.environ and _k in st.secrets:
+            os.environ[_k] = str(st.secrets[_k])
+    except Exception:
+        pass
+
 file_cfg = load_config()
 
 DEFAULT_STUDENTS = ROOT / "data" / "students_prod_2000_enriched.csv"
@@ -178,10 +189,10 @@ with tab_data:
         st.rerun()
 
     st.subheader("🧠 Enrichment cache")
-    sc = dict(collections.Counter(r.get("source", "keyword") for r in st.session_state.srecs.values()))
-    mc = dict(collections.Counter(r.get("source", "keyword") for r in st.session_state.mrecs.values()))
-    st.caption(f"Structured tags by source — students: {sc} · mentors: {mc} "
-               f"(saved to `{file_cfg.enrichment.cache_dir}`)")
+    sc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.srecs.values()))
+    mc = dict(collections.Counter(r.get("source", "unenriched") for r in st.session_state.mrecs.values()))
+    st.caption(f"Backend: **{store_mod.backend_name()}** · tags by source — "
+               f"students: {sc} · mentors: {mc}")
     e1, e2, e3 = st.columns(3)
     if e1.button("💾 Save tags to cache"):
         enrich_mod.save_cache(file_cfg, "student", st.session_state.srecs)
@@ -194,9 +205,13 @@ with tab_data:
     e3.download_button("⬇ mentors_enriched.json",
                        json.dumps(st.session_state.mrecs, ensure_ascii=False, indent=2),
                        "mentors_enriched.json", "application/json")
-    st.caption("On the deployed app the container disk is ephemeral — use the download "
-               "buttons and commit the JSON to the repo for permanent reuse, or attach a "
-               "Render persistent disk at the cache path.")
+    if store_mod.configured():
+        st.caption("✅ Supabase is connected — enrichment is saved there and persists "
+                   "across redeploys automatically.")
+    else:
+        st.caption("⚠️ No Supabase configured — tags save to the local disk only "
+                   "(ephemeral on Render). Set SUPABASE_URL/SUPABASE_KEY, or download the "
+                   "JSON and commit it, for permanent reuse.")
 
     st.subheader("👀 Current data")
     dt1, dt2 = st.tabs([f"Students ({len(st.session_state.students)})",
@@ -229,13 +244,16 @@ with tab_match:
             st.warning("No OPENAI_API_KEY in secrets/env. Set it on Render (or "
                        ".streamlit/secrets.toml) to enable live enrichment. "
                        "Matching still works on the offline cache.")
+        st.caption(f"Persistence backend: **{store_mod.backend_name()}**")
         c1, c2, c3 = st.columns([2, 1, 1])
         model = c1.text_input("Model", value=file_cfg.enrichment.resolve_model())
         kind = c2.selectbox("Target", ["student", "mentor"])
-        sample = c3.number_input("Sample rows", 1, 2000, 25, 25,
+        pool = students if kind == "student" else mentors
+        sample = c3.number_input("Sample rows", 1, len(pool), min(25, len(pool)), 25,
                                  help="Enrich the first N rows live (keeps cost low).")
+        all_rows = st.checkbox(f"Enrich ALL {len(pool)} {kind}s (slower / costlier)")
         if st.button("▶ Run enrichment", type="primary", disabled=not key):
-            items = (students if kind == "student" else mentors)[: int(sample)]
+            items = pool if all_rows else pool[: int(sample)]
             bar = st.progress(0.0, text="Calling OpenAI…")
             recs = enrich_mod.enrich_sync(
                 items, kind, model, key, file_cfg.enrichment.max_workers,
@@ -246,14 +264,15 @@ with tab_match:
             enrich_mod.save_cache(file_cfg, kind, full)   # persist tags for reuse
             bar.empty()
             n_failed = sum(1 for r in recs.values() if r.get("llm_failed"))
-            msg = f"Live-enriched {len(recs)} {kind} rows with {model} — saved to cache for reuse."
+            msg = (f"Live-enriched {len(recs)} {kind} rows with {model} — "
+                   f"saved to {store_mod.backend_name()} for reuse.")
             if n_failed:
-                msg += f" ({n_failed} rows fell back to keyword after retries.)"
+                msg += f" ({n_failed} rows stayed unenriched after retries.)"
             st.success(msg)
             srecs, mrecs = st.session_state.srecs, st.session_state.mrecs
 
     def _src_counts(recs):
-        return dict(collections.Counter(r.get("source", "keyword") for r in recs.values()))
+        return dict(collections.Counter(r.get("source", "unenriched") for r in recs.values()))
     st.caption(f"Enrichment source — students: {_src_counts(srecs)} · mentors: {_src_counts(mrecs)}")
 
     # ---- run matching ----

@@ -26,7 +26,7 @@ CSVs ─► data_io (parse JSON schedules)
      ─► metrics / CSV outputs / Streamlit UI
 ```
 
-The matcher runs **fully offline** on a committed deterministic enrichment cache, so the demo needs **no API key**. An LLM pass (OpenAI) upgrades the tags when a key is available.
+Enrichment is **LLM-only** (OpenAI). The semantic tags come solely from the LLM and are persisted (Supabase, or local JSON) for reuse. Rows not yet enriched get a **base record** — empty semantic tags plus a deterministically parsed gender — so Q1 (hard constraints) always works; Q2/Q3 scores rise once enrichment runs.
 
 ### Key design decisions & assumptions
 - **Gender is parent-specified, not same-gender.** ~57% of students state a desired mentor gender; ~22% of those request the *opposite* gender. So gender is enforced only when stated.
@@ -51,27 +51,37 @@ python -m matcher.cli rematch               # Q4 rejection + re-match
 python -m matcher.cli enrich --sync --sample 25   # live LLM enrichment (needs OPENAI_API_KEY)
 ```
 
-Representative results (committed keyword cache, default config):
+Representative results **after enrichment** (default config). Before enrichment, hard constraints give ~100% coverage at score 0; the engine gap appears once the LLM tags exist:
 
 | Engine | Coverage | Mean score | vs random |
 |--------|----------|-----------|-----------|
-| optimal | ~99.8% | ~0.38 | **+0.20** |
-| greedy  | ~98%   | ~0.36 | +0.19 |
-| random  | ~99%   | ~0.18 | — |
+| optimal | ~100% | higher | **best** |
+| greedy  | ~98%  | high   | + |
+| random  | ~99%  | low    | — |
+
+(optimal > greedy > random on mean score; the exact numbers depend on how many rows you enrich.)
 
 ## Tuning & overrides (no code edits)
 
 - **`config.yaml`** — `session_length_minutes`, `max_students_per_mentor`, `enforce_gender`, scoring `weights`, `thresholds`, `rejection_probability`, `random_seed`, `engine`. (The Streamlit sidebar exposes all of these live.)
 - **`overrides.yaml`** — `force` a pair, `block` a pair, `skip_students` / `skip_mentors`. The UI has equivalent text boxes. Re-run to recompute.
 
-## LLM enrichment (OpenAI)
+## LLM enrichment (OpenAI) — LLM-only
 
-Two paths, one cache schema (`data/cache/*.json`), using **Structured Outputs** for schema-valid tags:
+The semantic tags come **only** from OpenAI **Structured Outputs**; there is no keyword tagger. Rows not yet enriched are base (unenriched) records — empty tags + parsed gender — so they score 0 until enriched. Two paths:
 
-- **Offline / bulk** — `python -m matcher.cli enrich` uses the **Batch API** (50% cheaper) for the full 2,200 rows.
-- **Live / in-app** — the **"LLM enrichment"** panel in the Streamlit app: pick a model + sample size, click **Run** → concurrent calls with a progress bar; tags update and matching recomputes. Each row is retried up to **`max_retries`** times (default 2) before falling back to the keyword tagger (flagged `llm_failed`). Results are **auto-saved to the cache** for reuse, and the Data tab has **Save** + **Download JSON** controls (commit the JSON, or attach a Render persistent disk at the cache path, for persistence across redeploys).
+- **Offline / bulk** — `python -m matcher.cli enrich` uses the **Batch API** (50% cheaper) for the full dataset (requires `OPENAI_API_KEY`).
+- **Live / in-app** — the **"LLM enrichment"** panel: pick a model + sample size (or **Enrich ALL**), click **Run** → concurrent calls with a progress bar; tags update and matching recomputes. Each row is retried up to **`max_retries`** times (default 2) before staying unenriched (flagged `llm_failed`). Results are **auto-saved** to the active store.
 
-Model is config/env-driven (`OPENAI_MODEL`, default `gpt-4o-mini`). **The API key is auto-loaded** from `st.secrets["OPENAI_API_KEY"]` or the `OPENAI_API_KEY` env var — there's **no key box to fill on open**. Set it once on Render (env var) and locally in `.streamlit/secrets.toml` (git-ignored — see `.streamlit/secrets.toml.example`). The key is never committed. With no key, a deterministic VI/EN keyword tagger fills every field (and always backs gender via regex), so the tool never hard-depends on the API.
+The API key is auto-loaded from `OPENAI_API_KEY` (env on Render, or `.streamlit/secrets.toml` locally) — **no key box on open**, never committed. Model is `OPENAI_MODEL` (default `gpt-4o-mini`).
+
+### Persistence — Supabase (free) or local disk
+
+Tags are stored via a pluggable backend (`src/matcher/store.py`):
+- **Supabase** (Postgres) when `SUPABASE_URL` + `SUPABASE_KEY` are set → in-app enrichment **persists across redeploys**. One-time setup: run [`supabase_schema.sql`](supabase_schema.sql) in the Supabase SQL editor, then set the two env vars (Render dashboard, or local `secrets.toml`). The app uses the **service-role key** server-side.
+- **Local JSON** (`data/cache/*.json`) otherwise — fine for local dev, ephemeral on Render.
+
+The Data tab shows the active **backend**, a per-source breakdown (`llm` vs `unenriched`), and **Save** + **Download JSON** controls.
 
 ### Data management (Data tab)
 
@@ -82,7 +92,7 @@ The app's **Data** tab shows the current students/mentors tables, lets you **upl
 **Render + GitHub Actions:**
 
 1. Push this repo to GitHub.
-2. On Render: **New ▸ Blueprint**, select the repo (`render.yaml` defines a Docker web service that auto-deploys the `main` branch, with a `/_stcore/health` check). Set **`OPENAI_API_KEY`** as a service env var to enable live enrichment.
+2. On Render: **New ▸ Blueprint**, select the repo (`render.yaml` defines a Docker web service that auto-deploys the `main` branch, with a `/_stcore/health` check). Set env vars: **`OPENAI_API_KEY`** (enables LLM enrichment) and, for persistence, **`SUPABASE_URL`** + **`SUPABASE_KEY`** (after running `supabase_schema.sql`).
 3. Render auto-deploys every push to `main` → public URL `https://<service>.onrender.com`.
 4. [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `pytest` + a smoke match on every branch and PR, so you get a red/green signal before merging.
 
@@ -114,11 +124,12 @@ Covers slot/time boundaries, capacity non-overlap, gender-constraint logic (incl
 ## Project structure
 
 ```
-src/matcher/   config, data_io, enrich, schedule, capacity, constraints,
+src/matcher/   config, data_io, enrich, store, schedule, capacity, constraints,
                scoring, matcher, rematch, metrics, cli
-app/           streamlit_app.py        (UI + live LLM enrichment)
-data/          input CSVs + committed enrichment cache
+app/           streamlit_app.py        (UI + live LLM enrichment + data tab)
+data/          input CSVs
 tests/         pytest unit tests
 Dockerfile · render.yaml · .github/workflows/ci.yml   (deploy/CI)
+supabase_schema.sql                                   (persistence table)
 config.yaml · overrides.yaml                          (tunables)
 ```

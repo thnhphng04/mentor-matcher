@@ -37,12 +37,14 @@ def cmd_enrich(args):
     model = cfg.enrichment.resolve_model()
     key = _api_key()
 
+    if not key:
+        sys.exit("OPENAI_API_KEY is required for LLM enrichment (this build is LLM-only). "
+                 "Set it and re-run.")
+    from . import store
+    print(f"Enrichment backend: {store.backend_name()} · model: {model}")
+
     def run_kind(kind, items):
-        if not key:
-            print(f"[{kind}] no OPENAI_API_KEY -> deterministic keyword cache")
-            recs = {it.id: (enrich_mod.keyword_enrich_student(it) if kind == "student"
-                            else enrich_mod.keyword_enrich_mentor(it)) for it in items}
-        elif args.sync:
+        if args.sync:
             print(f"[{kind}] sync enrichment via {model} ({len(items)} rows)")
             recs = enrich_mod.enrich_sync(items, kind, model, key, cfg.enrichment.max_workers,
                                           cfg.enrichment.max_retries,
